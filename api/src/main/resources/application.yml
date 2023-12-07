@@ -1,3 +1,6 @@
+sso:
+  server: http://localhost:9011
+
 spring:
   main:
     web-application-type: servlet
@@ -14,3 +17,10 @@ spring:
 
   flyway:
     locations: classpath:db/migration
+
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          jwk-set-uri: ${sso.server}/.well-known/jwks.json
+          jws-algorithms: ES384

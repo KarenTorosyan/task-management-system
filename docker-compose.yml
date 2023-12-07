@@ -1,0 +1,68 @@
+version: '3.9'
+
+services:
+  fusionauth-db:
+    container_name: fusionauth-db
+    image: postgres:12.9
+    env_file:
+      - ./docker/fusionauth-db/postgres/.env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fusionauth-db-net
+    restart: unless-stopped
+    volumes:
+      - fusionauth-db-data:/var/lib/postgresql/datadb
+
+  fusionauth-search:
+    container_name: fusionauth-search
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    env_file:
+      - ./docker/fusionauth-search/elasticsearch/.env
+    healthcheck:
+      test: [ "CMD", "curl",  "--fail" ,"--write-out", "'HTTP %{http_code}'", "--silent", "--output", "/dev/null", "http://localhost:9200/" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fusionauth-search-net
+    restart: unless-stopped
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - fusionauth-search-data:/usr/share/elasticsearch/data
+
+  fusionauth:
+    container_name: fusionauth
+    image: fusionauth/fusionauth-app:latest
+    depends_on:
+      fusionauth-db:
+        condition: service_healthy
+      fusionauth-search:
+        condition: service_healthy
+    env_file:
+      - ./docker/fusionauth/.env
+    networks:
+      - fusionauth-db-net
+      - fusionauth-search-net
+    restart: unless-stopped
+    ports:
+      - "9011:9011"
+    volumes:
+      - fusionauth-config:/usr/local/fusionauth/config
+
+networks:
+  fusionauth-db-net:
+    driver: bridge
+  fusionauth-search-net:
+    driver: bridge
+
+volumes:
+  fusionauth-db-data:
+  fusionauth-config:
+  fusionauth-search-data:
