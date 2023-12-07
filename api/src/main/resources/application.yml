@@ -1,0 +1,16 @@
+spring:
+  main:
+    web-application-type: servlet
+    banner-mode: off
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tms
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    open-in-view: false
+
+  flyway:
+    locations: classpath:db/migration
