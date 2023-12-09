@@ -132,9 +132,9 @@ public class TaskCommentRepositoryTest {
         taskRepository.delete(task);
     }
 
-    @DisplayName("load user comment when exists")
+    @DisplayName("load comment")
     @Test
-    void loadUserCommentWhenExists() {
+    void shouldLoadComment() {
         Task task = taskRepository.save(new Task()
                 .setTitle("task")
                 .setDescription("description")
@@ -146,15 +146,17 @@ public class TaskCommentRepositoryTest {
                 .setTask(task)
                 .setContent("comment")
                 .setUser(user));
-        assertThat(taskCommentRepository.findByTaskIdAndUser(task.getId(), user))
+        assertThat(taskCommentRepository.findByTaskIdAndId(task.getId(), taskComment.getId()))
                 .contains(taskComment);
         taskRepository.delete(task);
     }
 
-    @DisplayName("load empty when user comment not exists")
+    @DisplayName("load empty when comment not exists")
     @Test
-    void loadEmptyWhenUserCommentNotExists() {
-        assertThat(taskCommentRepository.findByTaskIdAndUser(1L, "user"))
+    void shouldLoadEmptyWhenCommentNotExists() {
+        Long taskId = 1L;
+        Long commentId = 1L;
+        assertThat(taskCommentRepository.findByTaskIdAndId(taskId, commentId))
                 .isEmpty();
     }
 }

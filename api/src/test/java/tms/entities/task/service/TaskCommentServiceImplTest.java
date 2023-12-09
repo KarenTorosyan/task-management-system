@@ -86,23 +86,23 @@ public class TaskCommentServiceImplTest {
                 .setTask(task)
                 .setContent("content")
                 .setUser("user");
-        given(taskCommentRepository.findByTaskIdAndUser(task.getId(), taskComment.getUser()))
+        given(taskCommentRepository.findByTaskIdAndId(task.getId(), taskComment.getId()))
                 .willReturn(Optional.of(taskComment));
-        assertThat(taskCommentService.get(task.getId(), taskComment.getUser()))
+        assertThat(taskCommentService.get(task.getId(), taskComment.getId()))
                 .isEqualTo(taskComment);
-        verify(taskCommentRepository).findByTaskIdAndUser(task.getId(), taskComment.getUser());
+        verify(taskCommentRepository).findByTaskIdAndId(task.getId(), taskComment.getId());
     }
 
     @DisplayName("handle error when get comment when not found")
     @Test
     void shouldHandleErrorWhenGetCommentWhenNotFound() {
         Long taskId = 1L;
-        String user = "user";
-        given(taskCommentRepository.findByTaskIdAndUser(taskId, user))
+        Long commentId = 1L;
+        given(taskCommentRepository.findByTaskIdAndId(taskId, commentId))
                 .willReturn(Optional.empty());
-        assertThatThrownBy(() -> taskCommentService.get(taskId, user))
+        assertThatThrownBy(() -> taskCommentService.get(taskId, commentId))
                 .isInstanceOf(EntityNotFoundException.class);
-        verify(taskCommentRepository).findByTaskIdAndUser(taskId, user);
+        verify(taskCommentRepository).findByTaskIdAndId(taskId, commentId);
     }
 
     @DisplayName("get all comments")

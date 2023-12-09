@@ -10,7 +10,7 @@ public interface TaskCommentService {
 
     void delete(TaskComment taskComment);
 
-    TaskComment get(Long taskId, String user);
+    TaskComment get(Long taskId, Long commentId);
 
     Page<TaskComment> getAll(Long taskId, Pageable pageable);
 

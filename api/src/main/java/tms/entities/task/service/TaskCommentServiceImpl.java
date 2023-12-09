@@ -29,9 +29,9 @@ public class TaskCommentServiceImpl implements TaskCommentService {
 
     @Transactional(readOnly = true)
     @Override
-    public TaskComment get(Long taskId, String user) {
-        return taskCommentRepository.findByTaskIdAndUser(taskId, user)
-                .orElseThrow(() -> Errors.taskCommentNotFound(taskId, user));
+    public TaskComment get(Long taskId, Long commentId) {
+        return taskCommentRepository.findByTaskIdAndId(taskId, commentId)
+                .orElseThrow(() -> Errors.taskCommentNotFound(taskId, commentId));
     }
 
     @Transactional(readOnly = true)

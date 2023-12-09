@@ -15,5 +15,5 @@ public interface TaskCommentRepository extends JpaRepository<TaskComment, Long> 
 
     Page<TaskComment> findAllByUser(String user, Pageable pageable);
 
-    Optional<TaskComment> findByTaskIdAndUser(Long taskId, String user);
+    Optional<TaskComment> findByTaskIdAndId(Long taskId, Long commentId);
 }

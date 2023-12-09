@@ -21,7 +21,7 @@ public class Errors {
         return new EntityNotFoundException("The employee not found!", "task_employee_not_found", taskId, employee);
     }
 
-    public static EntityNotFoundException taskCommentNotFound(Long taskId, String user) {
-        return new EntityNotFoundException("The comment not found!", "task_comment_not_found", taskId, user);
+    public static EntityNotFoundException taskCommentNotFound(Long taskId, Long commentId) {
+        return new EntityNotFoundException("The comment not found!", "task_comment_not_found", taskId, commentId);
     }
 }
