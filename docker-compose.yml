@@ -1,6 +1,46 @@
 version: '3.9'
 
 services:
+  task-management-system:
+    container_name: task-management-system
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    networks:
+      - task-management-system-db-net
+      - fusionauth-net
+    ports:
+      - "8080:8080"
+    env_file:
+      - docker/task-management-system/dev.env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      task-management-system-db:
+        condition: service_healthy
+      fusionauth:
+        condition: service_healthy
+
+  task-management-system-db:
+    container_name: task-management-system-db
+    image: postgres:16.1-bullseye
+    networks:
+      - task-management-system-db-net
+    env_file:
+      - ./docker/task-management-system-db/postgres/.env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    volumes:
+      - task-management-system-db-data:/var/lib/postgresql/datadb
+
   fusionauth-db:
     container_name: fusionauth-db
     image: postgres:12.9
@@ -26,7 +66,7 @@ services:
       test: [ "CMD", "curl",  "--fail" ,"--write-out", "'HTTP %{http_code}'", "--silent", "--output", "/dev/null", "http://localhost:9200/" ]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 15
     networks:
       - fusionauth-search-net
     restart: unless-stopped
@@ -47,7 +87,13 @@ services:
         condition: service_healthy
     env_file:
       - ./docker/fusionauth/.env
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:9011" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
+      - fusionauth-net
       - fusionauth-db-net
       - fusionauth-search-net
     restart: unless-stopped
@@ -57,12 +103,17 @@ services:
       - fusionauth-config:/usr/local/fusionauth/config
 
 networks:
+  task-management-system-db-net:
+    driver: bridge
+  fusionauth-net:
+    driver: bridge
   fusionauth-db-net:
     driver: bridge
   fusionauth-search-net:
     driver: bridge
 
 volumes:
+  task-management-system-db-data:
   fusionauth-db-data:
   fusionauth-config:
   fusionauth-search-data:
