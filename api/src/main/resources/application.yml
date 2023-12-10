@@ -25,6 +25,14 @@ spring:
           jwk-set-uri: ${sso.server}/.well-known/jwks.json
           jws-algorithms: ES384
 
+  messages:
+    basename: locale/messages
+
+  data:
+    web:
+      pageable:
+        default-page-size: 10
+
 springdoc:
   swagger-ui:
     csrf:

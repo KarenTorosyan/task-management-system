@@ -2,6 +2,7 @@ package tms.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -15,6 +16,16 @@ import java.util.List;
 public class SecurityConfig {
 
     public static final AntPathRequestMatcher[] AUTHENTICATION = {
+            AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/tasks"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.PUT, "/tasks/*"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.DELETE, "/tasks/*"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/tasks/*/employees"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.DELETE, "/tasks/*/employees/*"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.PUT, "/tasks/*/status"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/tasks/*/comments"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.PUT, "/tasks/*/comments/*"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.DELETE, "/tasks/*/comments/*"),
+            AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/tasks/comments")
     };
 
     @Bean

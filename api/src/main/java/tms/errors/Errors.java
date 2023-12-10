@@ -2,11 +2,22 @@ package tms.errors;
 
 import tms.entities.task.TaskEmployee;
 
+import java.util.List;
+
 public class Errors {
 
     public static RequiredParamException emailOrPreferredUsernameRequiredInJwt() {
         String message = "The email or preferred_username required in jwt!";
         throw new RequiredParamException(message, "jwt_required_email_or_preferred_username");
+    }
+
+    public static NoAccessException noEnoughAccess(String user) {
+        return new NoAccessException("No enough access!", "no_enough_access", user);
+    }
+
+    public static EnumConflictException invalidEnumValue(List<String> available, String value) {
+        String message = "Use any of " + available + " instead " + value;
+        return new EnumConflictException(message, "enum_type_invalid", available, value);
     }
 
     public static EntityNotFoundException taskNotFound(Long taskId) {

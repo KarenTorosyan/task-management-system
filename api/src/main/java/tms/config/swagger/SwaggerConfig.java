@@ -5,7 +5,6 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.OAuthFlow;
 import io.swagger.v3.oas.models.security.OAuthFlows;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springdoc.core.properties.SwaggerUiOAuthProperties;
 import org.springframework.context.annotation.Bean;
@@ -22,9 +21,7 @@ public class SwaggerConfig {
                 .info(new Info().title("Task Management System").version("1.0"))
                 .components(new Components().securitySchemes(
                         Map.of("oAuth2", oauth2SecurityScheme(swaggerUiOAuthProperties))
-                ))
-                .addSecurityItem(new SecurityRequirement()
-                        .addList("oAuth2"));
+                ));
     }
 
     private SecurityScheme oauth2SecurityScheme(SwaggerUiOAuthProperties swaggerUiOAuthProperties) {
