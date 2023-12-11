@@ -133,7 +133,8 @@ public class TaskController {
     }
 
     @PutMapping("/tasks/{taskId}/status")
-    @ApiDocPutMappingRequireAuthorization(summary = "Change task status")
+    @ApiDocPutMappingRequireAuthorization(summary = "Change task status",
+            security = @SecurityRequirement(name = "oAuth2"))
     ResponseEntity<Void> changeTaskStatus(@PathVariable Long taskId,
                                           @AuthenticationPrincipal OAuth2User oAuth2User,
                                           @Validated @RequestBody TaskStatusChangeRequest request) {
