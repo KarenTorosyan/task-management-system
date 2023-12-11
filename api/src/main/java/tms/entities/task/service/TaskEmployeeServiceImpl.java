@@ -18,7 +18,7 @@ public class TaskEmployeeServiceImpl implements TaskEmployeeService {
     @Transactional
     @Override
     public void add(TaskEmployee taskEmployee) {
-        if (!has(taskEmployee.getId(), taskEmployee.getEmployee())) {
+        if (!has(taskEmployee.getTask().getId(), taskEmployee.getEmployee())) {
             taskEmployeeRepository.save(taskEmployee);
         } else throw Errors.taskEmployeeDuplicate(taskEmployee);
     }

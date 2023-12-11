@@ -49,9 +49,12 @@ public class TaskEmployeeServiceImplTest {
         TaskEmployee taskEmployee = new TaskEmployee()
                 .setTask(task)
                 .setEmployee("employee");
+        given(taskEmployeeRepository.existsByTaskIdAndEmployee(task.getId(), taskEmployee.getEmployee()))
+                .willReturn(false);
         given(taskEmployeeRepository.save(taskEmployee))
                 .willReturn(taskEmployee);
         taskEmployeeService.add(taskEmployee);
+        verify(taskEmployeeRepository).existsByTaskIdAndEmployee(task.getId(), taskEmployee.getEmployee());
         verify(taskEmployeeRepository).save(taskEmployee);
     }
 
@@ -68,10 +71,11 @@ public class TaskEmployeeServiceImplTest {
         TaskEmployee taskEmployee = new TaskEmployee()
                 .setTask(task)
                 .setEmployee("employee");
-        given(taskEmployeeRepository.save(taskEmployee))
-                .willThrow(Errors.taskEmployeeDuplicate(taskEmployee));
+        given(taskEmployeeRepository.existsByTaskIdAndEmployee(task.getId(), taskEmployee.getEmployee()))
+                .willReturn(true);
         assertThatThrownBy(() -> taskEmployeeService.add(taskEmployee))
                 .isInstanceOf(EntityConflictException.class);
+        verify(taskEmployeeRepository).existsByTaskIdAndEmployee(task.getId(), taskEmployee.getEmployee());
     }
 
     @DisplayName("delete employee when found")
