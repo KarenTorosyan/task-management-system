@@ -30,9 +30,11 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     implementation(libs.springdoc.swagger)
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
     implementation("org.postgresql:postgresql")
     implementation("org.flywaydb:flyway-core")
     testImplementation("org.testcontainers:postgresql")
+    testImplementation("org.testcontainers:elasticsearch")
 }
 
 tasks.test {

@@ -11,6 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import tms.entities.task.Task;
 import tms.entities.task.TaskPriority;
 import tms.entities.task.TaskStatus;
+import tms.entities.task.out.index.TaskSearchRepository;
 import tms.entities.task.out.persistence.TaskRepository;
 import tms.errors.EntityNotFoundException;
 import tms.errors.Errors;
@@ -33,6 +34,9 @@ public class TaskServiceImplTest {
 
     @MockBean
     private TaskRepository taskRepository;
+
+    @MockBean
+    private TaskSearchRepository taskSearchRepository;
 
     @DisplayName("save task")
     @Test
@@ -129,7 +133,7 @@ public class TaskServiceImplTest {
 
     @DisplayName("get employee tasks")
     @Test
-    void getEmployeeTasks() {
+    void shouldGetEmployeeTasks() {
         Task task = new Task()
                 .setId(1L)
                 .setTitle("task")
@@ -149,7 +153,7 @@ public class TaskServiceImplTest {
 
     @DisplayName("get tasks by status")
     @Test
-    void getTasksByStatus() {
+    void shouldGetTasksByStatus() {
         Task task = new Task()
                 .setId(1L)
                 .setTitle("task")
@@ -168,7 +172,7 @@ public class TaskServiceImplTest {
 
     @DisplayName("get tasks by priority")
     @Test
-    void getTasksByPriority() {
+    void shouldGetTasksByPriority() {
         Task task = new Task()
                 .setId(1L)
                 .setTitle("task")
@@ -183,5 +187,24 @@ public class TaskServiceImplTest {
                 .hasSize(1)
                 .contains(task);
         verify(taskRepository).findAllByPriority(task.getPriority(), pageable);
+    }
+
+    @DisplayName("get tasks by query")
+    @Test
+    void shouldGetTasksByQuery() {
+        Task task = new Task()
+                .setId(1L)
+                .setTitle("task")
+                .setDescription("description")
+                .setStatus(TaskStatus.PENDING)
+                .setPriority(TaskPriority.MEDIUM)
+                .setUser("user");
+        Pageable pageable = Pageable.unpaged();
+        given(taskSearchRepository.findAllByQuery(task.getTitle(), pageable))
+                .willReturn(new PageImpl<>(List.of(task)));
+        assertThat(taskService.getAllByQuery(task.getTitle(), pageable))
+                .hasSize(1)
+                .contains(task);
+        verify(taskSearchRepository).findAllByQuery(task.getTitle(), pageable);
     }
 }

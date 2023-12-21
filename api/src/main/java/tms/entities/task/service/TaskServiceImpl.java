@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tms.entities.task.Task;
 import tms.entities.task.TaskPriority;
 import tms.entities.task.TaskStatus;
+import tms.entities.task.out.index.TaskSearchRepository;
 import tms.entities.task.out.persistence.TaskRepository;
 import tms.errors.Errors;
 
@@ -16,17 +17,21 @@ import tms.errors.Errors;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+    private final TaskSearchRepository taskSearchRepository;
 
     @Transactional
     @Override
     public Task save(Task task) {
-        return taskRepository.save(task);
+        Task savedTask = taskRepository.save(task);
+        taskSearchRepository.save(savedTask);
+        return savedTask;
     }
 
     @Transactional
     @Override
     public void delete(Task task) {
         taskRepository.delete(task);
+        taskSearchRepository.deleteById(task.getId());
     }
 
     @Transactional(readOnly = true)
@@ -64,5 +69,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Page<Task> getAllByPriority(TaskPriority priority, Pageable pageable) {
         return taskRepository.findAllByPriority(priority, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<Task> getAllByQuery(String query, Pageable pageable) {
+        return taskSearchRepository.findAllByQuery(query, pageable);
     }
 }

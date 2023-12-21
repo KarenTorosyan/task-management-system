@@ -8,22 +8,40 @@ services:
       dockerfile: Dockerfile
     networks:
       - task-management-system-db-net
+      - task-management-system-search-net
       - fusionauth-net
     ports:
       - "8080:8080"
     env_file:
       - docker/task-management-system/dev.env
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8080"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
     depends_on:
       task-management-system-db:
         condition: service_healthy
+      task-management-system-elasticsearch:
+        condition: service_healthy
       fusionauth:
         condition: service_healthy
+
+  task-management-system-elasticsearch:
+    container_name: "task-management-system-search"
+    image: elasticsearch:8.11.3
+    networks:
+      - task-management-system-search-net
+    volumes:
+      - task-management-system-search-data:/usr/share/elasticsearch/data
+    env_file:
+      - docker/task-management-system-search/elasticsearch/.env
+    healthcheck:
+      test: [ "CMD", "curl",  "--fail" ,"--write-out", "'HTTP %{http_code}'", "--silent", "--output", "/dev/null", "http://localhost:9200/" ]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    restart: unless-stopped
 
   task-management-system-db:
     container_name: task-management-system-db
@@ -59,7 +77,7 @@ services:
 
   fusionauth-search:
     container_name: fusionauth-search
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    image: elasticsearch:8.11.3
     env_file:
       - ./docker/fusionauth-search/elasticsearch/.env
     healthcheck:
@@ -104,16 +122,14 @@ services:
 
 networks:
   task-management-system-db-net:
-    driver: bridge
+  task-management-system-search-net:
   fusionauth-net:
-    driver: bridge
   fusionauth-db-net:
-    driver: bridge
   fusionauth-search-net:
-    driver: bridge
 
 volumes:
   task-management-system-db-data:
+  task-management-system-search-data:
   fusionauth-db-data:
   fusionauth-config:
   fusionauth-search-data:

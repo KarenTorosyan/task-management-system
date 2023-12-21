@@ -3,6 +3,7 @@ package tms.errors;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -85,6 +86,27 @@ public class RestErrorHandler {
                 .setDatetime(Instant.now())
                 .setMessage(messageSource.getMessage("invalid_fields", new Object[]{}, request.getLocale()))
                 .setDetails(details);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PropertyReferenceException.class)
+    ResponseEntity<ErrorResponse> handle(PropertyReferenceException e, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse()
+                .setUri(request.getRequestURI())
+                .setStatus(HttpStatus.BAD_REQUEST.value())
+                .setDatetime(Instant.now())
+                .setMessage(messageSource.getMessage("invalid_sort_field",
+                        new Object[]{e.getPropertyName()}, request.getLocale()));
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(SortConflictException.class)
+    ResponseEntity<ErrorResponse> handle(SortConflictException e, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse()
+                .setUri(request.getRequestURI())
+                .setStatus(HttpStatus.BAD_REQUEST.value())
+                .setDatetime(Instant.now())
+                .setMessage(localize(e, request));
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }

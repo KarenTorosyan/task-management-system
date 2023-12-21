@@ -35,4 +35,14 @@ public class Errors {
     public static EntityNotFoundException taskCommentNotFound(Long taskId, Long commentId) {
         return new EntityNotFoundException("The comment not found!", "task_comment_not_found", taskId, commentId);
     }
+
+    public static SortConflictException canNotSortByTextSearchField(String field) {
+        String message = "Cannot sort by '" + field + "' because text search fields are not sortable";
+        return new SortConflictException(message, "can_not_sort_by_text_search_field", field);
+    }
+
+    public static SortConflictException invalidSortField(String field) {
+        String message = "Invalid sort field";
+        return new SortConflictException(message, "invalid_sort_field", field);
+    }
 }

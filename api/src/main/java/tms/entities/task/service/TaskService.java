@@ -23,4 +23,6 @@ public interface TaskService {
     Page<Task> getAllByStatus(TaskStatus status, Pageable pageable);
 
     Page<Task> getAllByPriority(TaskPriority priority, Pageable pageable);
+
+    Page<Task> getAllByQuery(String query, Pageable pageable);
 }

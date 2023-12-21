@@ -78,6 +78,14 @@ public class TaskController {
         } : taskService.getAllByUser(user, pageable);
     }
 
+    @GetMapping("/tasks/search")
+    @ApiDocGetMappingResponsePage(summary = "Search tasks")
+    ResponseEntity<Page<TaskResponse>> searchTasks(@RequestParam String query,
+                                                   @ApiDocHide Pageable pageable) {
+        return ResponseEntity.ok(taskService.getAllByQuery(query, pageable)
+                .map(TaskResponse::from));
+    }
+
     @GetMapping("/tasks/{taskId}")
     @ApiDocGetMapping(summary = "Get task")
     ResponseEntity<TaskResponse> getTaskById(@PathVariable Long taskId) {

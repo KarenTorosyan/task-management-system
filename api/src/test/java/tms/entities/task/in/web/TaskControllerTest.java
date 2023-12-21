@@ -261,6 +261,69 @@ public class TaskControllerTest {
         verify(taskService).getAllByEmployee(employee, pageable);
     }
 
+    @DisplayName("get tasks by query and sort by title")
+    @Test
+    void shouldGetTasksByQuery() throws Exception {
+        Pageable pageable = PageRequest.of(0, 10).withSort(Sort.by("title"));
+        String taskTitle = "task";
+        PageImpl<Task> tasks = new PageImpl<>(List.of(
+                new Task()
+                        .setId(1L)
+                        .setTitle(taskTitle)
+                        .setDescription("description")
+                        .setStatus(TaskStatus.PENDING)
+                        .setPriority(TaskPriority.HIGH)
+                        .setUser("user")
+        ), pageable, 1);
+        given(taskService.getAllByQuery(taskTitle, pageable))
+                .willReturn(tasks);
+        mockMvc.perform(get("/tasks/search")
+                        .queryParam("query", taskTitle)
+                        .queryParam("page", String.valueOf(pageable.getPageNumber()))
+                        .queryParam("size", String.valueOf(pageable.getPageSize()))
+                        .queryParam("sort", "title,asc")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(tasks.map(TaskResponse::from))));
+        verify(taskService).getAllByQuery(taskTitle, pageable);
+    }
+
+    @DisplayName("handle error when get tasks by query and sort by text search field")
+    @Test
+    void shouldHandleErrorWhenGetTasksByQueryAndSortByTextSearchField() throws Exception {
+        String textSearchField = "description";
+        Pageable pageable = PageRequest.of(0, 10).withSort(Sort.by(textSearchField));
+        String taskTitle = "task";
+        given(taskService.getAllByQuery(taskTitle, pageable))
+                .willThrow(Errors.canNotSortByTextSearchField("description"));
+        mockMvc.perform(get("/tasks/search")
+                        .queryParam("query", taskTitle)
+                        .queryParam("page", String.valueOf(pageable.getPageNumber()))
+                        .queryParam("size", String.valueOf(pageable.getPageSize()))
+                        .queryParam("sort", textSearchField + ",asc")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+        verify(taskService).getAllByQuery(taskTitle, pageable);
+    }
+
+    @DisplayName("handle error when get tasks by query and sort by invalid field")
+    @Test
+    void shouldHandleErrorWhenGetTasksByQueryAndSortByInvalidField() throws Exception {
+        String textSearchField = "invalid";
+        Pageable pageable = PageRequest.of(0, 10).withSort(Sort.by(textSearchField));
+        String taskTitle = "task";
+        given(taskService.getAllByQuery(taskTitle, pageable))
+                .willThrow(Errors.invalidSortField("description"));
+        mockMvc.perform(get("/tasks/search")
+                        .queryParam("query", taskTitle)
+                        .queryParam("page", String.valueOf(pageable.getPageNumber()))
+                        .queryParam("size", String.valueOf(pageable.getPageSize()))
+                        .queryParam("sort", textSearchField + ",asc")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+        verify(taskService).getAllByQuery(taskTitle, pageable);
+    }
+
     @DisplayName("get task by id when found")
     @Test
     void shouldGetTaskByIdWhenFound() throws Exception {
