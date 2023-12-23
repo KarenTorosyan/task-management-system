@@ -10,13 +10,14 @@ import tms.entities.task.Task;
 import tms.entities.task.TaskPriority;
 import tms.entities.task.TaskStatus;
 
+import java.util.Objects;
+
 @Document(indexName = "tasks")
 @Getter
 @Setter
 @Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
 @ToString
 public class TaskDocument {
 
@@ -56,5 +57,18 @@ public class TaskDocument {
                 .setStatus(status)
                 .setPriority(priority)
                 .setUser(user);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TaskDocument that = (TaskDocument) o;
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

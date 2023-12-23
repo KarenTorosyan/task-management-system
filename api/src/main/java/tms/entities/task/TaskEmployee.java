@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "task_employees")
 @Getter
@@ -11,7 +13,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
 @ToString(exclude = "task")
 public class TaskEmployee {
 
@@ -26,4 +27,18 @@ public class TaskEmployee {
 
     @Column(name = "employee")
     private String employee;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TaskEmployee taskEmployee = (TaskEmployee) o;
+        return Objects.equals(getTask().getId(), taskEmployee.getTask().getId())
+                && Objects.equals(getEmployee(), taskEmployee.getEmployee());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTask().getId(), getEmployee());
+    }
 }
