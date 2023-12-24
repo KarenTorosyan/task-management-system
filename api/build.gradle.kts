@@ -31,10 +31,12 @@ dependencies {
     implementation(libs.springdoc.swagger)
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.postgresql:postgresql")
     implementation("org.flywaydb:flyway-core")
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:elasticsearch")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate6")
 }
 
 tasks.test {

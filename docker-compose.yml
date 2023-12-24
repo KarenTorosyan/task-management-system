@@ -9,6 +9,7 @@ services:
     networks:
       - task-management-system-db-net
       - task-management-system-search-net
+      - task-management-system-cache-redis-net
       - fusionauth-net
     ports:
       - "8080:8080"
@@ -19,6 +20,8 @@ services:
       task-management-system-db:
         condition: service_healthy
       task-management-system-elasticsearch:
+        condition: service_healthy
+      task-management-system-cache-redis:
         condition: service_healthy
       fusionauth:
         condition: service_healthy
@@ -58,6 +61,22 @@ services:
     restart: unless-stopped
     volumes:
       - task-management-system-db-data:/var/lib/postgresql/datadb
+
+  task-management-system-cache-redis:
+    container_name: task-management-system-cache-redis
+    image: redis:7.2.3-bookworm
+    networks:
+      - task-management-system-cache-redis-net
+    volumes:
+      - task-management-system-cache-redis-data:/data
+      - ./docker/task-management-system-cache/redis/redis.conf:/etc/redis/redis.conf
+    command: redis-server /etc/redis/redis.conf
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   fusionauth-db:
     container_name: fusionauth-db
@@ -123,6 +142,7 @@ services:
 networks:
   task-management-system-db-net:
   task-management-system-search-net:
+  task-management-system-cache-redis-net:
   fusionauth-net:
   fusionauth-db-net:
   fusionauth-search-net:
@@ -130,6 +150,7 @@ networks:
 volumes:
   task-management-system-db-data:
   task-management-system-search-data:
+  task-management-system-cache-redis-data:
   fusionauth-db-data:
   fusionauth-config:
   fusionauth-search-data:
