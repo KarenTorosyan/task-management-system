@@ -29,9 +29,9 @@
 
 #### Запуск
 
-1. Сборка и запуск `docker compose up -d`
-2. Сконфигурировать [сервер авторизации](http://localhost:9011/admin) самастoятельно или использовать начальную конфигурацию
-   `docker exec -i fusionauth-db psql -U postgres -d fusionauth < ./docker/fusionauth-db/postgres/dump.sql && docker compose restart`
-   администратор `admin:password`
+1. Сборка и запуск `docker compose up`
+2. Начальная конфигурация для сервера авторизации:
+   `docker exec -i fusionauth-db psql -U postgres -d fusionauth < ./docker/fusionauth-db/postgres/dump.sql && docker compose restart fusionauth`
+   администратор `pubappadm@outlook.com:password`
 
 - [Документация](http://localhost:8080/swagger-ui.html)

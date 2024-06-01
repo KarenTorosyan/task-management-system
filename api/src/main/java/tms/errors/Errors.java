@@ -6,8 +6,8 @@ import java.util.List;
 
 public class Errors {
 
-    public static RequiredParamException emailOrPreferredUsernameRequiredInJwt() {
-        String message = "The email or preferred_username required in jwt!";
+    public static RequiredParamException jwtClaimRequired(String name) {
+        String message = "The claim: " + name + " required, but JWT not contains";
         throw new RequiredParamException(message, "jwt_required_email_or_preferred_username");
     }
 

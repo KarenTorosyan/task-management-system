@@ -28,7 +28,7 @@ spring:
       resource-server:
         jwt:
           jwk-set-uri: ${sso.server}/.well-known/jwks.json
-          jws-algorithms: ES384
+          jws-algorithms: RS256
 
   messages:
     basename: locale/messages
@@ -47,6 +47,7 @@ spring:
       port: 6379
       repositories:
         enabled: false
+      password: redis
 
   cache:
     type: redis
@@ -58,9 +59,9 @@ springdoc:
     csrf:
       enabled: true
     oauth:
-      client-id: 22adff03-0643-4cc9-9747-57284615c848
+      client-id: f3c84053-b5ff-423f-b2b5-af690b7199b0
       use-pkce-with-authorization-code-grant: true
-      scopes: openid, email, refresh_token
+      scopes: openid, email
       additional-query-string-params:
         authorization-uri: ${sso.server}/oauth2/authorize
         token-uri: ${sso.server}/oauth2/token

@@ -19,8 +19,7 @@ import java.util.Set;
 public class JwtConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
     public static final String ROLES_CLAIM = "roles";
-    public static final String EMAIL_CLAIM = "email";
-    public static final String PREFERRED_USERNAME_CLAIM = "preferred_username";
+    public static final String SUB = "sub";
 
     @Override
     public AbstractAuthenticationToken convert(@NonNull Jwt source) {
@@ -43,13 +42,12 @@ public class JwtConverter implements Converter<Jwt, AbstractAuthenticationToken>
         return mapper.mapAuthorities(roles);
     }
 
+    // email, email_verified, preferred_username removed from sso provider https://fusionauth.io/docs/lifecycle/authenticate-users/oauth/tokens
     private String getNameAttributeKey(Jwt jwt) {
-        if (jwt.hasClaim(EMAIL_CLAIM)) {
-            return EMAIL_CLAIM;
-        } else if (jwt.hasClaim(PREFERRED_USERNAME_CLAIM)) {
-            return PREFERRED_USERNAME_CLAIM;
+        if (jwt.hasClaim(SUB)) {
+            return SUB;
         }
-        throw Errors.emailOrPreferredUsernameRequiredInJwt();
+        throw Errors.jwtClaimRequired(SUB);
     }
 }
 

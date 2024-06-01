@@ -60,11 +60,10 @@ public class JwtConverterTest {
                 ));
     }
 
-    @DisplayName("throw error when email and preferred_username undefined in jwt")
+    @DisplayName("throw error when sub claim undefined")
     @Test
-    void shouldThrowErrorWhenEmailAndPreferredUsernameUndefinedInJwt() {
+    void shouldThrowErrorWhenSubClaimUndefined() {
         Jwt jwt = Jwt.withTokenValue("token")
-                .subject("subject")
                 .header("typ", "JWT")
                 .claim("roles", List.of("admin", "user"))
                 .issuedAt(Instant.now())

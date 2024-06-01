@@ -15,7 +15,7 @@ public class SecurityPrincipal {
                 .subject(user)
                 .issuedAt(Instant.now())
                 .expiresAt(Instant.now())
-                .claim(JwtConverter.EMAIL_CLAIM, user)
+                .claim(JwtConverter.SUB, user)
                 .claim(JwtConverter.ROLES_CLAIM, authorities)
                 .build());
     }

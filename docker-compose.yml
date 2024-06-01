@@ -45,6 +45,8 @@ services:
         soft: -1
         hard: -1
     restart: unless-stopped
+    ports:
+      - "9200:9200"
 
   task-management-system-db:
     container_name: task-management-system-db
@@ -60,7 +62,9 @@ services:
       retries: 5
     restart: unless-stopped
     volumes:
-      - task-management-system-db-data:/var/lib/postgresql/datadb
+      - task-management-system-db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
   task-management-system-cache-redis:
     container_name: task-management-system-cache-redis
@@ -77,10 +81,12 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    ports:
+      - "6379:6379"
 
   fusionauth-db:
     container_name: fusionauth-db
-    image: postgres:12.9
+    image: postgres:16.1-bullseye
     env_file:
       - ./docker/fusionauth-db/postgres/.env
     healthcheck:
@@ -92,18 +98,17 @@ services:
       - fusionauth-db-net
     restart: unless-stopped
     volumes:
-      - fusionauth-db-data:/var/lib/postgresql/datadb
+      - fusionauth-db-data:/var/lib/postgresql/data
 
   fusionauth-search:
     container_name: fusionauth-search
-    image: elasticsearch:8.11.3
+    image: opensearchproject/opensearch:2.11.0
     env_file:
       - ./docker/fusionauth-search/elasticsearch/.env
     healthcheck:
-      test: [ "CMD", "curl",  "--fail" ,"--write-out", "'HTTP %{http_code}'", "--silent", "--output", "/dev/null", "http://localhost:9200/" ]
-      interval: 5s
-      timeout: 5s
-      retries: 15
+      interval: 10s
+      retries: 80
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:9200/
     networks:
       - fusionauth-search-net
     restart: unless-stopped
@@ -111,12 +116,18 @@ services:
       memlock:
         soft: -1
         hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+#    ports:
+#      - "9200:9200" # REST API
+#      - "9600:9600" # Performance Analyzer
     volumes:
-      - fusionauth-search-data:/usr/share/elasticsearch/data
+      - fusionauth-search-data:/usr/share/opensearch/data
 
   fusionauth:
     container_name: fusionauth
-    image: fusionauth/fusionauth-app:latest
+    image: fusionauth/fusionauth-app:1.51.0
     depends_on:
       fusionauth-db:
         condition: service_healthy
