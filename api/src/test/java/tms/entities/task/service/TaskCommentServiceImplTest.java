@@ -24,12 +24,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest
-@ContextConfiguration(classes = TaskCommentServiceImpl.class)
+@ContextConfiguration(classes = TaskCommentService.class)
 @DisplayName("TaskCommentServiceImpl should")
 public class TaskCommentServiceImplTest {
 
     @Autowired
-    private TaskCommentServiceImpl taskCommentService;
+    private TaskCommentService taskCommentService;
 
     @MockBean
     private TaskCommentRepository taskCommentRepository;

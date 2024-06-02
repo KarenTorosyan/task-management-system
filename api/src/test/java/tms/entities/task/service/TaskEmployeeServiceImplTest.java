@@ -15,7 +15,6 @@ import tms.entities.task.TaskStatus;
 import tms.entities.task.out.persistence.TaskEmployeeRepository;
 import tms.errors.EntityConflictException;
 import tms.errors.EntityNotFoundException;
-import tms.errors.Errors;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,12 +25,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest
-@ContextConfiguration(classes = TaskEmployeeServiceImpl.class)
+@ContextConfiguration(classes = TaskEmployeeService.class)
 @DisplayName("TaskEmployeeServiceImpl should")
 public class TaskEmployeeServiceImplTest {
 
     @Autowired
-    private TaskEmployeeServiceImpl taskEmployeeService;
+    private TaskEmployeeService taskEmployeeService;
 
     @MockBean
     private TaskEmployeeRepository taskEmployeeRepository;

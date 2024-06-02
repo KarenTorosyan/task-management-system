@@ -1,20 +1,48 @@
 package tms.entities.task.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tms.entities.task.TaskComment;
+import tms.entities.task.out.persistence.TaskCommentRepository;
+import tms.errors.Errors;
 
-public interface TaskCommentService {
+@Service
+@RequiredArgsConstructor
+public class TaskCommentService {
 
-    void save(TaskComment taskComment);
+    private final TaskCommentRepository taskCommentRepository;
 
-    void delete(TaskComment taskComment);
+    @Transactional
+    public void save(TaskComment taskComment) {
+        taskCommentRepository.save(taskComment);
+    }
 
-    TaskComment get(Long taskId, Long commentId);
+    @Transactional
+    public void delete(TaskComment taskComment) {
+        taskCommentRepository.delete(taskComment);
+    }
 
-    Page<TaskComment> getAll(Long taskId, Pageable pageable);
+    @Transactional(readOnly = true)
+    public TaskComment get(Long taskId, Long commentId) {
+        return taskCommentRepository.findByTaskIdAndId(taskId, commentId)
+                .orElseThrow(() -> Errors.taskCommentNotFound(taskId, commentId));
+    }
 
-    Page<TaskComment> getAllByParentId(Long parentId, Pageable pageable);
+    @Transactional(readOnly = true)
+    public Page<TaskComment> getAll(Long taskId, Pageable pageable) {
+        return taskCommentRepository.findAllByTaskIdAndParentIdIsNull(taskId, pageable);
+    }
 
-    Page<TaskComment> getAllByUser(String user, Pageable pageable);
+    @Transactional(readOnly = true)
+    public Page<TaskComment> getAllByParentId(Long parentId, Pageable pageable) {
+        return taskCommentRepository.findAllByParentId(parentId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TaskComment> getAllByUser(String user, Pageable pageable) {
+        return taskCommentRepository.findAllByUser(user, pageable);
+    }
 }
