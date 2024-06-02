@@ -13,7 +13,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import tms.errors.Errors;
 
-import java.util.List;
 import java.util.Set;
 
 public class JwtConverter implements Converter<Jwt, AbstractAuthenticationToken> {
@@ -36,10 +35,12 @@ public class JwtConverter implements Converter<Jwt, AbstractAuthenticationToken>
     private Set<GrantedAuthority> getRoles(Jwt jwt) {
         SimpleAuthorityMapper mapper = new SimpleAuthorityMapper();
         mapper.setConvertToUpperCase(true);
-        List<SimpleGrantedAuthority> roles = jwt.getClaimAsStringList(ROLES_CLAIM)
-                .stream().map(SimpleGrantedAuthority::new)
-                .toList();
-        return mapper.mapAuthorities(roles);
+
+        return !jwt.hasClaim(ROLES_CLAIM) ? Set.of() :
+                mapper.mapAuthorities(jwt.getClaimAsStringList(ROLES_CLAIM)
+                        .stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .toList());
     }
 
     // email, email_verified, preferred_username removed from sso provider https://fusionauth.io/docs/lifecycle/authenticate-users/oauth/tokens

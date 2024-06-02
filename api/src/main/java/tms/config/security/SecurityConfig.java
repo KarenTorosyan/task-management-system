@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
@@ -27,6 +28,11 @@ public class SecurityConfig {
             AntPathRequestMatcher.antMatcher(HttpMethod.DELETE, "/tasks/*/comments/*"),
             AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/tasks/comments")
     };
+
+    @Bean
+    public BearerTokenResolver bearerTokenResolver() {
+        return new BearerTokenExtractor();
+    }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {

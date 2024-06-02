@@ -10,6 +10,7 @@ import org.springdoc.core.properties.SwaggerUiOAuthProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
@@ -17,11 +18,19 @@ public class SwaggerConfig {
 
     @Bean
     OpenAPI openAPI(SwaggerUiOAuthProperties swaggerUiOAuthProperties) {
+        Map<String, SecurityScheme> securitySchemes = new HashMap<>();
+        securitySchemes.put("oAuth2", bearerTokenSecurityScheme());
+        securitySchemes.put("oAuth2Client", oauth2SecurityScheme(swaggerUiOAuthProperties));
         return new OpenAPI()
                 .info(new Info().title("Task Management System").version("1.0"))
-                .components(new Components().securitySchemes(
-                        Map.of("oAuth2", oauth2SecurityScheme(swaggerUiOAuthProperties))
-                ));
+                .components(new Components().securitySchemes(securitySchemes));
+    }
+
+    private SecurityScheme bearerTokenSecurityScheme() {
+        return new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT");
     }
 
     private SecurityScheme oauth2SecurityScheme(SwaggerUiOAuthProperties swaggerUiOAuthProperties) {
