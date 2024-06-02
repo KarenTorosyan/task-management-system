@@ -3,7 +3,7 @@ create table tasks(
     title varchar(100) not null,
     description text,
     status varchar(100) not null,
-    priority varchar(100) not null,
+    priority int not null,
     "user" varchar(100) not null
 );
 
