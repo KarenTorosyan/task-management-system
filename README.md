@@ -27,11 +27,19 @@
     или MySQL. Для реализации аутентификации и авторизации нужно использовать Spring Security. Можно использовать
     дополнительные инсрументы, если в этом есть необходимость (например кэш).
 
-#### Запуск
+### Запуск
 
-1. Сборка и запуск `docker compose up`
-2. Начальная конфигурация для сервера авторизации:
-   `docker exec -i fusionauth-db psql -U postgres -d fusionauth < ./docker/fusionauth-db/postgres/dump.sql && docker compose restart fusionauth`
-   администратор `pubappadm@outlook.com:password`
+Начальная конфигурация для сервера авторизации, можно применять после запуска
+`docker exec -i fusionauth-db psql -U postgres -d fusionauth < ./docker/fusionauth-db/postgres/dump.sql && docker compose restart fusionauth`
+администратор `pubappadm@outlook.com:password`
 
-- [Документация](http://localhost:8080/swagger-ui.html)
+- [API Документация](http://localhost:8080/swagger-ui.html) ℹ️ будет доступно после запуска
+
+#### Вариант с авторизацией на стороне клиента
+
+1. Сборка и запуск `docker compose up task-management-system`
+2. Взаимодействие с сервером авторизации через [API](https://fusionauth.io/docs/apis) или [SDK](https://fusionauth.io/docs/sdks)
+
+#### Вариант с авторизацией на стороне сервера
+
+Скоро...
