@@ -2,7 +2,6 @@ package tms.entities.task.in.web;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import tms.entities.task.Task;
@@ -19,7 +18,6 @@ public record TaskCreateRequest(
         String description,
 
         @JsonProperty(required = true)
-        @JsonDeserialize(using = TaskPriorityJsonDeserializer.class)
         TaskPriority priority) {
 
     @JsonIgnore
