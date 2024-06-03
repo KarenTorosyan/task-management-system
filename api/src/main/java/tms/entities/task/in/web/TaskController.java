@@ -5,8 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -21,6 +19,7 @@ import tms.entities.task.service.TaskService;
 import tms.errors.Errors;
 
 import java.net.URI;
+import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,10 +33,10 @@ public class TaskController {
     @PostMapping("/tasks")
     @DocPostProtectedEntry(summary = "Create task")
     ResponseEntity<Void> createTask(@Validated @RequestBody TaskCreateRequest request,
-                                    @AuthenticationPrincipal OAuth2User oAuth2User) {
+                                    Principal principal) {
         Task task = taskService.save(request.getTask()
                 .setStatus(TaskStatus.PENDING)
-                .setUser(oAuth2User.getName()));
+                .setUser(principal.getName()));
         URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .replacePath("/tasks/{taskId}")
                 .build(task.getId());
@@ -48,11 +47,11 @@ public class TaskController {
     @DocPutProtectedEntry(summary = "Edit task")
     ResponseEntity<Void> editTask(@PathVariable Long taskId,
                                   @Validated @RequestBody TaskEditRequest request,
-                                  @AuthenticationPrincipal OAuth2User oAuth2User) {
+                                  Principal principal) {
         Task task = taskService.getById(taskId);
-        if (task.getUser().equals(oAuth2User.getName())) {
+        if (task.getUser().equals(principal.getName())) {
             taskService.save(request.modify(task));
-        } else throw Errors.noEnoughAccess(oAuth2User.getName());
+        } else throw Errors.noEnoughAccess(principal.getName());
         return ResponseEntity.noContent().build();
     }
 
@@ -92,11 +91,11 @@ public class TaskController {
     @DeleteMapping("/tasks/{taskId}")
     @DocDeleteProtectedEntry(summary = "Delete task")
     ResponseEntity<Void> deleteTask(@PathVariable Long taskId,
-                                    @AuthenticationPrincipal OAuth2User oAuth2User) {
+                                    Principal principal) {
         Task task = taskService.getById(taskId);
-        if (task.getUser().equals(oAuth2User.getName())) {
+        if (task.getUser().equals(principal.getName())) {
             taskService.delete(task);
-        } else throw Errors.noEnoughAccess(oAuth2User.getName());
+        } else throw Errors.noEnoughAccess(principal.getName());
         return ResponseEntity.noContent().build();
     }
 
@@ -104,12 +103,12 @@ public class TaskController {
     @DocPostProtectedEntry(summary = "Add employee")
     ResponseEntity<Void> addEmployee(@PathVariable Long taskId,
                                      @Validated @RequestBody TaskEmployeeAddRequest request,
-                                     @AuthenticationPrincipal OAuth2User oAuth2User) {
+                                     Principal principal) {
         Task task = taskService.getById(taskId);
-        if (task.getUser().equals(oAuth2User.getName())) {
+        if (task.getUser().equals(principal.getName())) {
             taskEmployeeService.add(request.getTaskEmployee()
                     .setTask(task));
-        } else throw Errors.noEnoughAccess(oAuth2User.getName());
+        } else throw Errors.noEnoughAccess(principal.getName());
         return ResponseEntity.noContent().build();
     }
 
@@ -125,25 +124,25 @@ public class TaskController {
     @DocDeleteProtectedEntry(summary = "Delete employee")
     ResponseEntity<Page<TaskEmployeeResponse>> deleteEmployee(@PathVariable Long taskId,
                                                               @PathVariable String user,
-                                                              @AuthenticationPrincipal OAuth2User oAuth2User) {
+                                                              Principal principal) {
         Task task = taskService.getById(taskId);
-        if (task.getUser().equals(oAuth2User.getName())) {
+        if (task.getUser().equals(principal.getName())) {
             TaskEmployee taskEmployee = taskEmployeeService.get(taskId, user);
             taskEmployeeService.delete(taskEmployee);
-        } else throw Errors.noEnoughAccess(oAuth2User.getName());
+        } else throw Errors.noEnoughAccess(principal.getName());
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/tasks/{taskId}/status")
     @DocPutProtectedEntry(summary = "Change task status")
     ResponseEntity<Void> changeTaskStatus(@PathVariable Long taskId,
-                                          @AuthenticationPrincipal OAuth2User oAuth2User,
+                                          Principal principal,
                                           @Validated @RequestBody TaskStatusChangeRequest request) {
         Task task = taskService.getById(taskId);
-        if (task.getUser().equals(oAuth2User.getName()) ||
-                taskEmployeeService.has(taskId, oAuth2User.getName())) {
+        if (task.getUser().equals(principal.getName()) ||
+                taskEmployeeService.has(taskId, principal.getName())) {
             taskService.save(request.modify(task));
-        } else throw Errors.noEnoughAccess(oAuth2User.getName());
+        } else throw Errors.noEnoughAccess(principal.getName());
         return ResponseEntity.noContent().build();
     }
 
@@ -151,10 +150,10 @@ public class TaskController {
     @DocPostProtectedEntry(summary = "Add comment")
     ResponseEntity<Void> addComment(@PathVariable Long taskId,
                                     @Validated @RequestBody TaskCommentAddRequest request,
-                                    @AuthenticationPrincipal OAuth2User oAuth2User) {
+                                    Principal principal) {
         Task task = taskService.getById(taskId);
         TaskComment taskComment = request.getComment()
-                .setUser(oAuth2User.getName())
+                .setUser(principal.getName())
                 .setTask(task);
         if (request.getCommentParentId() != null) {
             TaskComment parent = taskCommentService.get(taskId, request.getCommentParentId());
@@ -169,11 +168,11 @@ public class TaskController {
     ResponseEntity<Void> editComment(@PathVariable Long taskId,
                                      @PathVariable Long commentId,
                                      @Validated @RequestBody TaskCommentEditRequest request,
-                                     @AuthenticationPrincipal OAuth2User oAuth2User) {
+                                     Principal principal) {
         TaskComment taskComment = taskCommentService.get(taskId, commentId);
-        if (taskComment.getUser().equals(oAuth2User.getName())) {
+        if (taskComment.getUser().equals(principal.getName())) {
             taskCommentService.save(request.modify(taskComment));
-        } else throw Errors.noEnoughAccess(oAuth2User.getName());
+        } else throw Errors.noEnoughAccess(principal.getName());
         return ResponseEntity.noContent().build();
     }
 
@@ -195,9 +194,9 @@ public class TaskController {
 
     @GetMapping("/tasks/comments")
     @DocGetProtectedEntriesPage(summary = "Get user comments")
-    ResponseEntity<Page<TaskCommentResponse>> getComments(@AuthenticationPrincipal OAuth2User oAuth2User,
+    ResponseEntity<Page<TaskCommentResponse>> getComments(Principal principal,
                                                           @DocInvisibleParam Pageable pageable) {
-        return ResponseEntity.ok(taskCommentService.getAllByUser(oAuth2User.getName(), pageable)
+        return ResponseEntity.ok(taskCommentService.getAllByUser(principal.getName(), pageable)
                 .map(TaskCommentResponse::from));
     }
 
@@ -205,11 +204,11 @@ public class TaskController {
     @DocDeleteProtectedEntry(summary = "Delete comment")
     ResponseEntity<Void> deleteComment(@PathVariable Long taskId,
                                        @PathVariable Long commentId,
-                                       @AuthenticationPrincipal OAuth2User oAuth2User) {
+                                       Principal principal) {
         TaskComment taskComment = taskCommentService.get(taskId, commentId);
-        if (taskComment.getUser().equals(oAuth2User.getName())) {
+        if (taskComment.getUser().equals(principal.getName())) {
             taskCommentService.delete(taskComment);
-        } else throw Errors.noEnoughAccess(oAuth2User.getName());
+        } else throw Errors.noEnoughAccess(principal.getName());
         return ResponseEntity.noContent().build();
     }
 }
