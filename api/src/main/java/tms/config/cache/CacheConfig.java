@@ -18,8 +18,7 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 @EnableCaching
 public class CacheConfig {
 
-    @Bean
-    ObjectMapper cacheObjectMapper() {
+    private ObjectMapper cacheObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setFilterProvider(new SimpleFilterProvider()
                 .addFilter("idOnly", SimpleBeanPropertyFilter.filterOutAllExcept("id")));
@@ -29,8 +28,8 @@ public class CacheConfig {
     }
 
     @Bean
-    RedisSerializer<?> redisSerializer(ObjectMapper objectMapper) {
-        return new GenericJackson2JsonRedisSerializer(objectMapper.copy());
+    RedisSerializer<?> redisSerializer() {
+        return new GenericJackson2JsonRedisSerializer(cacheObjectMapper());
     }
 
     @Bean
