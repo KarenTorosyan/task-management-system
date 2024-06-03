@@ -1,5 +1,6 @@
 package tms.entities.task;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
@@ -50,9 +51,11 @@ public class Task {
     private String user;
 
     @OneToMany(mappedBy = "task")
+    @JsonIgnore
     private Set<TaskEmployee> employees;
 
     @OneToMany(mappedBy = "task")
+    @JsonIgnore
     private Set<TaskComment> comments;
 
     @Override
