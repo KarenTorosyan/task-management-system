@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation
-public @interface ApiDocPostMapping {
+public @interface DocPutPublicEntry {
 
     @AliasFor(annotation = Operation.class)
     String summary() default "";
@@ -25,13 +25,16 @@ public @interface ApiDocPostMapping {
 
     @AliasFor(annotation = Operation.class)
     ApiResponse[] responses() default {
+            @ApiResponse(responseCode = ResponseCodes.NOT_FOUND,
+                    description = ResponseCodes.NOT_FOUND_DESCRIPTION,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+
             @ApiResponse(responseCode = ResponseCodes.BAD_REQUEST,
                     description = ResponseCodes.BAD_REQUEST_DESCRIPTION,
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
 
-            @ApiResponse(responseCode = ResponseCodes.CONFLICT,
-                    description = ResponseCodes.CONFLICT_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            @ApiResponse(responseCode = ResponseCodes.NO_CONTENT,
+                    description = ResponseCodes.NO_CONTENT_DESCRIPTION)
     };
 
     @AliasFor(annotation = Operation.class)

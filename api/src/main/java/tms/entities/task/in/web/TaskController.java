@@ -1,6 +1,5 @@
 package tms.entities.task.in.web;
 
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,8 +32,7 @@ public class TaskController {
     private final TaskCommentService taskCommentService;
 
     @PostMapping("/tasks")
-    @ApiDocPostMappingRequireAuthorization(summary = "Create task",
-            security = @SecurityRequirement(name = "oAuth2"))
+    @DocPostProtectedEntry(summary = "Create task")
     ResponseEntity<Void> createTask(@Validated @RequestBody TaskCreateRequest request,
                                     @AuthenticationPrincipal OAuth2User oAuth2User) {
         Task task = taskService.save(request.getTask()
@@ -47,8 +45,7 @@ public class TaskController {
     }
 
     @PutMapping("/tasks/{taskId}")
-    @ApiDocPutMappingRequireAuthorization(summary = "Edit task",
-            security = @SecurityRequirement(name = "oAuth2"))
+    @DocPutProtectedEntry(summary = "Edit task")
     ResponseEntity<Void> editTask(@PathVariable Long taskId,
                                   @Validated @RequestBody TaskEditRequest request,
                                   @AuthenticationPrincipal OAuth2User oAuth2User) {
@@ -60,8 +57,8 @@ public class TaskController {
     }
 
     @GetMapping("/tasks")
-    @ApiDocGetMappingResponsePage(summary = "Get tasks")
-    ResponseEntity<Page<TaskResponse>> getTasks(@ApiDocHide Pageable pageable,
+    @DocGetPublicEntriesPage(summary = "Get tasks")
+    ResponseEntity<Page<TaskResponse>> getTasks(@DocInvisibleParam Pageable pageable,
                                                 @RequestParam(required = false) String user,
                                                 @RequestParam(required = false) TaskUserType userType) {
         Page<Task> tasks = getTasksByCriteria(user, userType, pageable);
@@ -79,22 +76,21 @@ public class TaskController {
     }
 
     @GetMapping("/tasks/search")
-    @ApiDocGetMappingResponsePage(summary = "Search tasks")
+    @DocGetPublicEntriesPage(summary = "Search tasks")
     ResponseEntity<Page<TaskResponse>> searchTasks(@RequestParam String query,
-                                                   @ApiDocHide Pageable pageable) {
+                                                   @DocInvisibleParam Pageable pageable) {
         return ResponseEntity.ok(taskService.getAllByQuery(query, pageable)
                 .map(TaskResponse::from));
     }
 
     @GetMapping("/tasks/{taskId}")
-    @ApiDocGetMapping(summary = "Get task")
+    @DocGetPublicEntry(summary = "Get task")
     ResponseEntity<TaskResponse> getTaskById(@PathVariable Long taskId) {
         return ResponseEntity.ok(TaskResponse.from(taskService.getById(taskId)));
     }
 
     @DeleteMapping("/tasks/{taskId}")
-    @ApiDocDeleteMappingRequireAuthorization(summary = "Delete task",
-            security = @SecurityRequirement(name = "oAuth2"))
+    @DocDeleteProtectedEntry(summary = "Delete task")
     ResponseEntity<Void> deleteTask(@PathVariable Long taskId,
                                     @AuthenticationPrincipal OAuth2User oAuth2User) {
         Task task = taskService.getById(taskId);
@@ -105,8 +101,7 @@ public class TaskController {
     }
 
     @PostMapping("/tasks/{taskId}/employees")
-    @ApiDocPostMappingRequireAuthorization(summary = "Add employee",
-            security = @SecurityRequirement(name = "oAuth2"))
+    @DocPostProtectedEntry(summary = "Add employee")
     ResponseEntity<Void> addEmployee(@PathVariable Long taskId,
                                      @Validated @RequestBody TaskEmployeeAddRequest request,
                                      @AuthenticationPrincipal OAuth2User oAuth2User) {
@@ -119,16 +114,15 @@ public class TaskController {
     }
 
     @GetMapping("/tasks/{taskId}/employees")
-    @ApiDocGetMappingResponsePage(summary = "Get employees")
+    @DocGetPublicEntriesPage(summary = "Get employees")
     ResponseEntity<Page<TaskEmployeeResponse>> getEmployees(@PathVariable Long taskId,
-                                                            @ApiDocHide Pageable pageable) {
+                                                            @DocInvisibleParam Pageable pageable) {
         return ResponseEntity.ok(taskEmployeeService.getAll(taskId, pageable)
                 .map(TaskEmployeeResponse::from));
     }
 
     @DeleteMapping("/tasks/{taskId}/employees/{user}")
-    @ApiDocDeleteMappingRequireAuthorization(summary = "Delete employee",
-            security = @SecurityRequirement(name = "oAuth2"))
+    @DocDeleteProtectedEntry(summary = "Delete employee")
     ResponseEntity<Page<TaskEmployeeResponse>> deleteEmployee(@PathVariable Long taskId,
                                                               @PathVariable String user,
                                                               @AuthenticationPrincipal OAuth2User oAuth2User) {
@@ -141,8 +135,7 @@ public class TaskController {
     }
 
     @PutMapping("/tasks/{taskId}/status")
-    @ApiDocPutMappingRequireAuthorization(summary = "Change task status",
-            security = @SecurityRequirement(name = "oAuth2"))
+    @DocPutProtectedEntry(summary = "Change task status")
     ResponseEntity<Void> changeTaskStatus(@PathVariable Long taskId,
                                           @AuthenticationPrincipal OAuth2User oAuth2User,
                                           @Validated @RequestBody TaskStatusChangeRequest request) {
@@ -155,8 +148,7 @@ public class TaskController {
     }
 
     @PostMapping("/tasks/{taskId}/comments")
-    @ApiDocPostMappingRequireAuthorization(summary = "Add comment",
-            security = @SecurityRequirement(name = "oAuth2"))
+    @DocPostProtectedEntry(summary = "Add comment")
     ResponseEntity<Void> addComment(@PathVariable Long taskId,
                                     @Validated @RequestBody TaskCommentAddRequest request,
                                     @AuthenticationPrincipal OAuth2User oAuth2User) {
@@ -173,8 +165,7 @@ public class TaskController {
     }
 
     @PutMapping("/tasks/{taskId}/comments/{commentId}")
-    @ApiDocPutMappingRequireAuthorization(summary = "Edit comment",
-            security = @SecurityRequirement(name = "oAuth2"))
+    @DocPutProtectedEntry(summary = "Edit comment")
     ResponseEntity<Void> editComment(@PathVariable Long taskId,
                                      @PathVariable Long commentId,
                                      @Validated @RequestBody TaskCommentEditRequest request,
@@ -187,33 +178,31 @@ public class TaskController {
     }
 
     @GetMapping("/tasks/{taskId}/comments")
-    @ApiDocGetMappingResponsePage(summary = "Get comments")
+    @DocGetPublicEntriesPage(summary = "Get comments")
     ResponseEntity<Page<TaskCommentResponse>> getComments(@PathVariable Long taskId,
-                                                          @ApiDocHide Pageable pageable) {
+                                                          @DocInvisibleParam Pageable pageable) {
         return ResponseEntity.ok(taskCommentService.getAll(taskId, pageable)
                 .map(TaskCommentResponse::from));
     }
 
     @GetMapping("/tasks/comments/{commentId}/replies")
-    @ApiDocGetMappingResponsePage(summary = "Get comment replies")
+    @DocGetPublicEntriesPage(summary = "Get comment replies")
     ResponseEntity<Page<TaskCommentResponse>> getCommentsReplies(@PathVariable Long commentId,
-                                                                 @ApiDocHide Pageable pageable) {
+                                                                 @DocInvisibleParam Pageable pageable) {
         return ResponseEntity.ok(taskCommentService.getAllByParentId(commentId, pageable)
                 .map(TaskCommentResponse::from));
     }
 
     @GetMapping("/tasks/comments")
-    @ApiDocGetMappingResponsePageRequireAuthorization(summary = "Get user comments",
-            security = @SecurityRequirement(name = "oAuth2"))
+    @DocGetProtectedEntriesPage(summary = "Get user comments")
     ResponseEntity<Page<TaskCommentResponse>> getComments(@AuthenticationPrincipal OAuth2User oAuth2User,
-                                                          @ApiDocHide Pageable pageable) {
+                                                          @DocInvisibleParam Pageable pageable) {
         return ResponseEntity.ok(taskCommentService.getAllByUser(oAuth2User.getName(), pageable)
                 .map(TaskCommentResponse::from));
     }
 
     @DeleteMapping("/tasks/{taskId}/comments/{commentId}")
-    @ApiDocDeleteMappingRequireAuthorization(summary = "Delete comment",
-            security = @SecurityRequirement(name = "oAuth2"))
+    @DocDeleteProtectedEntry(summary = "Delete comment")
     ResponseEntity<Void> deleteComment(@PathVariable Long taskId,
                                        @PathVariable Long commentId,
                                        @AuthenticationPrincipal OAuth2User oAuth2User) {

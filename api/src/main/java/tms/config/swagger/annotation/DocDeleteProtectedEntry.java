@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation
-public @interface ApiDocPutMappingRequireAuthentication {
+public @interface DocDeleteProtectedEntry {
 
     @AliasFor(annotation = Operation.class)
     String summary() default "";
@@ -29,18 +29,22 @@ public @interface ApiDocPutMappingRequireAuthentication {
                     description = ResponseCodes.NOT_FOUND_DESCRIPTION,
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
 
-            @ApiResponse(responseCode = ResponseCodes.BAD_REQUEST,
-                    description = ResponseCodes.BAD_REQUEST_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-
             @ApiResponse(responseCode = ResponseCodes.NO_CONTENT,
-                    description = ResponseCodes.NO_CONTENT_DESCRIPTION),
+                    description = ResponseCodes.NO_CONTENT_DESCRIPTION,
+                    content = @Content),
 
             @ApiResponse(responseCode = ResponseCodes.UNAUTHORIZED,
                     description = ResponseCodes.UNAUTHORIZED_DESCRIPTION,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+
+            @ApiResponse(responseCode = ResponseCodes.FORBIDDEN,
+                    description = ResponseCodes.FORBIDDEN_DESCRIPTION,
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     };
 
     @AliasFor(annotation = Operation.class)
-    SecurityRequirement[] security() default {};
+    SecurityRequirement[] security() default {
+        @SecurityRequirement(name = "bearer"),
+        @SecurityRequirement(name = "oAuth2Client")
+    };
 }

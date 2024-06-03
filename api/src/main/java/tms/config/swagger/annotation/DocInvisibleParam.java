@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Schema(hidden = true)
-public @interface ApiDocHide {
+public @interface DocInvisibleParam {
 }

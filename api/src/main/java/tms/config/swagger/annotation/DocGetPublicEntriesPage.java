@@ -3,7 +3,6 @@ package tms.config.swagger.annotation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -17,7 +16,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation
-public @interface ApiDocGetMappingResponsePageRequireAuthorization {
+public @interface DocGetPublicEntriesPage {
 
     @AliasFor(annotation = Operation.class)
     String summary() default "";
@@ -35,15 +34,7 @@ public @interface ApiDocGetMappingResponsePageRequireAuthorization {
     @AliasFor(annotation = Operation.class)
     ApiResponse[] responses() default {
             @ApiResponse(responseCode = ResponseCodes.OK,
-                    description = ResponseCodes.OK_DESCRIPTION),
-
-            @ApiResponse(responseCode = ResponseCodes.UNAUTHORIZED,
-                    description = ResponseCodes.UNAUTHORIZED_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-
-            @ApiResponse(responseCode = ResponseCodes.FORBIDDEN,
-                    description = ResponseCodes.FORBIDDEN_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    description = ResponseCodes.OK_DESCRIPTION)
     };
 
     @AliasFor(annotation = Operation.class)

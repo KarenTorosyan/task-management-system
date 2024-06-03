@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation
-public @interface ApiDocGetMapping {
+public @interface DocGetProtectedEntry {
 
     @AliasFor(annotation = Operation.class)
     String summary() default "";
@@ -30,9 +30,20 @@ public @interface ApiDocGetMapping {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
 
             @ApiResponse(responseCode = ResponseCodes.OK,
-                    description = ResponseCodes.OK_DESCRIPTION)
+                    description = ResponseCodes.OK_DESCRIPTION),
+
+            @ApiResponse(responseCode = ResponseCodes.UNAUTHORIZED,
+                    description = ResponseCodes.UNAUTHORIZED_DESCRIPTION,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+
+            @ApiResponse(responseCode = ResponseCodes.FORBIDDEN,
+                    description = ResponseCodes.FORBIDDEN_DESCRIPTION,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     };
 
     @AliasFor(annotation = Operation.class)
-    SecurityRequirement[] security() default {};
+    SecurityRequirement[] security() default {
+            @SecurityRequirement(name = "bearer"),
+            @SecurityRequirement(name = "oAuth2Client")
+    };
 }

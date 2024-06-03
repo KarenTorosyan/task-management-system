@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation
-public @interface ApiDocDeleteMappingRequireAuthorization {
+public @interface DocGetPublicEntry {
 
     @AliasFor(annotation = Operation.class)
     String summary() default "";
@@ -29,17 +29,8 @@ public @interface ApiDocDeleteMappingRequireAuthorization {
                     description = ResponseCodes.NOT_FOUND_DESCRIPTION,
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
 
-            @ApiResponse(responseCode = ResponseCodes.NO_CONTENT,
-                    description = ResponseCodes.NO_CONTENT_DESCRIPTION,
-                    content = @Content),
-
-            @ApiResponse(responseCode = ResponseCodes.UNAUTHORIZED,
-                    description = ResponseCodes.UNAUTHORIZED_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-
-            @ApiResponse(responseCode = ResponseCodes.FORBIDDEN,
-                    description = ResponseCodes.FORBIDDEN_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            @ApiResponse(responseCode = ResponseCodes.OK,
+                    description = ResponseCodes.OK_DESCRIPTION)
     };
 
     @AliasFor(annotation = Operation.class)

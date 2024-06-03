@@ -19,7 +19,7 @@ public class SwaggerConfig {
     @Bean
     OpenAPI openAPI(SwaggerUiOAuthProperties swaggerUiOAuthProperties) {
         Map<String, SecurityScheme> securitySchemes = new HashMap<>();
-        securitySchemes.put("oAuth2", bearerTokenSecurityScheme());
+        securitySchemes.put("bearer", bearerTokenSecurityScheme());
         securitySchemes.put("oAuth2Client", oauth2SecurityScheme(swaggerUiOAuthProperties));
         return new OpenAPI()
                 .info(new Info().title("Task Management System").version("1.0"))

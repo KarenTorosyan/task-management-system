@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation
-public @interface ApiDocGetMappingResponseCollectionRequireAuthorization {
+public @interface DocPostProtectedEntry {
 
     @AliasFor(annotation = Operation.class)
     String summary() default "";
@@ -25,8 +25,16 @@ public @interface ApiDocGetMappingResponseCollectionRequireAuthorization {
 
     @AliasFor(annotation = Operation.class)
     ApiResponse[] responses() default {
-            @ApiResponse(responseCode = ResponseCodes.OK,
-                    description = ResponseCodes.OK_DESCRIPTION),
+            @ApiResponse(responseCode = ResponseCodes.BAD_REQUEST,
+                    description = ResponseCodes.BAD_REQUEST_DESCRIPTION,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+
+            @ApiResponse(responseCode = ResponseCodes.CONFLICT,
+                    description = ResponseCodes.CONFLICT_DESCRIPTION,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+
+            @ApiResponse(responseCode = ResponseCodes.CREATED,
+                    description = ResponseCodes.CREATED_DESCRIPTION),
 
             @ApiResponse(responseCode = ResponseCodes.UNAUTHORIZED,
                     description = ResponseCodes.UNAUTHORIZED_DESCRIPTION,
@@ -38,5 +46,8 @@ public @interface ApiDocGetMappingResponseCollectionRequireAuthorization {
     };
 
     @AliasFor(annotation = Operation.class)
-    SecurityRequirement[] security() default {};
+    SecurityRequirement[] security() default {
+            @SecurityRequirement(name = "bearer"),
+            @SecurityRequirement(name = "oAuth2Client")
+    };
 }

@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation
-public @interface ApiDocPutMappingRequireAuthorization {
+public @interface DocPutProtectedEntry {
 
     @AliasFor(annotation = Operation.class)
     String summary() default "";
@@ -46,5 +46,8 @@ public @interface ApiDocPutMappingRequireAuthorization {
     };
 
     @AliasFor(annotation = Operation.class)
-    SecurityRequirement[] security() default {};
+    SecurityRequirement[] security() default {
+            @SecurityRequirement(name = "bearer"),
+            @SecurityRequirement(name = "oAuth2Client")
+    };
 }

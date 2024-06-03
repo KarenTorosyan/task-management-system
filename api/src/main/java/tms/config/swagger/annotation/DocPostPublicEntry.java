@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Operation
-public @interface ApiDocGetMappingRequireAuthorization {
+public @interface DocPostPublicEntry {
 
     @AliasFor(annotation = Operation.class)
     String summary() default "";
@@ -25,19 +25,12 @@ public @interface ApiDocGetMappingRequireAuthorization {
 
     @AliasFor(annotation = Operation.class)
     ApiResponse[] responses() default {
-            @ApiResponse(responseCode = ResponseCodes.NOT_FOUND,
-                    description = ResponseCodes.NOT_FOUND_DESCRIPTION,
+            @ApiResponse(responseCode = ResponseCodes.BAD_REQUEST,
+                    description = ResponseCodes.BAD_REQUEST_DESCRIPTION,
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
 
-            @ApiResponse(responseCode = ResponseCodes.OK,
-                    description = ResponseCodes.OK_DESCRIPTION),
-
-            @ApiResponse(responseCode = ResponseCodes.UNAUTHORIZED,
-                    description = ResponseCodes.UNAUTHORIZED_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-
-            @ApiResponse(responseCode = ResponseCodes.FORBIDDEN,
-                    description = ResponseCodes.FORBIDDEN_DESCRIPTION,
+            @ApiResponse(responseCode = ResponseCodes.CONFLICT,
+                    description = ResponseCodes.CONFLICT_DESCRIPTION,
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     };
 
