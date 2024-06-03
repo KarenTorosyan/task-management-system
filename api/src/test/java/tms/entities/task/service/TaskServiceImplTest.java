@@ -8,7 +8,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ContextConfiguration;
-import tms.cache.CacheService;
 import tms.entities.task.Task;
 import tms.entities.task.TaskPriority;
 import tms.entities.task.TaskStatus;
@@ -39,9 +38,6 @@ public class TaskServiceImplTest {
     @MockBean
     private TaskSearchRepository taskSearchRepository;
 
-    @MockBean
-    private CacheService cacheService;
-
     @DisplayName("save task")
     @Test
     void shouldSaveTask() {
@@ -56,7 +52,6 @@ public class TaskServiceImplTest {
         taskService.save(task);
         verify(taskRepository).save(task);
         verify(taskSearchRepository).save(task);
-        verify(cacheService).putCache(TaskService.CacheName, task.getId(), task);
     }
 
     @DisplayName("delete task")
@@ -71,24 +66,6 @@ public class TaskServiceImplTest {
         taskService.delete(task);
         verify(taskRepository).delete(task);
         verify(taskSearchRepository).deleteById(task.getId());
-        verify(cacheService).evict(TaskService.CacheName, task.getId());
-    }
-
-    @DisplayName("get task from cache when cached")
-    @Test
-    void shouldGetTaskFromCacheWhenCached() {
-        Task task = new Task()
-                .setId(1L)
-                .setTitle("task")
-                .setDescription("description")
-                .setStatus(TaskStatus.PENDING)
-                .setPriority(TaskPriority.MEDIUM)
-                .setUser("user");
-        given(cacheService.getCache(TaskService.CacheName, task.getId(), Task.class))
-                .willReturn(Optional.of(task));
-        assertThat(taskService.getById(task.getId()))
-                .isEqualTo(task);
-        verify(cacheService).getCache(TaskService.CacheName, task.getId(), Task.class);
     }
 
     @DisplayName("get task by id from repository when cache not found and cache it")
@@ -106,7 +83,6 @@ public class TaskServiceImplTest {
         assertThat(taskService.getById(task.getId()))
                 .isEqualTo(task);
         verify(taskRepository).findById(task.getId());
-        verify(cacheService).putCache(TaskService.CacheName, task.getId(), task);
     }
 
     @DisplayName("handle error when get task by id when not found")

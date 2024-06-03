@@ -1,5 +1,7 @@
 package tms.entities.task;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -16,28 +18,35 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = {"employees", "comments"})
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JsonProperty("id")
     private Long id;
 
     @Column(name = "title")
+    @JsonProperty("title")
     private String title;
 
     @Column(name = "description")
+    @JsonProperty("description")
     private String description;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
+    @JsonProperty("status")
     private TaskStatus status;
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "priority")
+    @JsonProperty("priority")
     private TaskPriority priority;
 
     @Column(name = "\"user\"")
+    @JsonProperty("user")
     private String user;
 
     @OneToMany(mappedBy = "task")

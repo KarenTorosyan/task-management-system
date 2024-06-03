@@ -1,11 +1,14 @@
 package tms.entities.task.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tms.cache.CacheService;
 import tms.entities.task.Task;
 import tms.entities.task.TaskPriority;
 import tms.entities.task.TaskStatus;
@@ -14,39 +17,33 @@ import tms.entities.task.out.persistence.TaskRepository;
 import tms.errors.Errors;
 
 @Service
+@CacheConfig(cacheNames = "task")
 @RequiredArgsConstructor
 public class TaskService {
 
-    public static final String CacheName = "task";
-
     private final TaskRepository taskRepository;
     private final TaskSearchRepository taskSearchRepository;
-    private final CacheService cacheService;
 
+    @CachePut(key = "#task.id")
     @Transactional
     public Task save(Task task) {
         Task savedTask = taskRepository.save(task);
         taskSearchRepository.save(savedTask);
-        cacheService.putCache(CacheName, savedTask.getId(), savedTask);
         return savedTask;
     }
 
     @Transactional
+    @CacheEvict(key = "#task.id")
     public void delete(Task task) {
         taskRepository.delete(task);
         taskSearchRepository.deleteById(task.getId());
-        cacheService.evict(CacheName, task.getId());
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(key = "#taskId")
     public Task getById(Long taskId) {
-        return cacheService.getCache(CacheName, taskId, Task.class)
-                .orElseGet(() -> {
-                    Task task = taskRepository.findById(taskId)
-                            .orElseThrow(() -> Errors.taskNotFound(taskId));
-                    cacheService.putCache(CacheName, task.getId(), task);
-                    return task;
-                });
+        return taskRepository.findById(taskId)
+                .orElseThrow(() -> Errors.taskNotFound(taskId));
     }
 
     @Transactional(readOnly = true)
