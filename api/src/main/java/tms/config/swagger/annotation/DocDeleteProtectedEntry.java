@@ -27,7 +27,7 @@ public @interface DocDeleteProtectedEntry {
     ApiResponse[] responses() default {
             @ApiResponse(responseCode = ResponseCodes.NOT_FOUND,
                     description = ResponseCodes.NOT_FOUND_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    content = @Content(schema = @Schema(implementation = ErrorState.class))),
 
             @ApiResponse(responseCode = ResponseCodes.NO_CONTENT,
                     description = ResponseCodes.NO_CONTENT_DESCRIPTION,
@@ -35,11 +35,11 @@ public @interface DocDeleteProtectedEntry {
 
             @ApiResponse(responseCode = ResponseCodes.UNAUTHORIZED,
                     description = ResponseCodes.UNAUTHORIZED_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    content = @Content(schema = @Schema(implementation = ErrorState.class))),
 
             @ApiResponse(responseCode = ResponseCodes.FORBIDDEN,
                     description = ResponseCodes.FORBIDDEN_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorState.class)))
     };
 
     @AliasFor(annotation = Operation.class)

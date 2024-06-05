@@ -30,11 +30,11 @@ public @interface DocGetProtectedEntries {
 
             @ApiResponse(responseCode = ResponseCodes.UNAUTHORIZED,
                     description = ResponseCodes.UNAUTHORIZED_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    content = @Content(schema = @Schema(implementation = ErrorState.class))),
 
             @ApiResponse(responseCode = ResponseCodes.FORBIDDEN,
                     description = ResponseCodes.FORBIDDEN_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorState.class)))
     };
 
     @AliasFor(annotation = Operation.class)

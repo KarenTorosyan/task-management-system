@@ -27,11 +27,11 @@ public @interface DocPutPublicEntry {
     ApiResponse[] responses() default {
             @ApiResponse(responseCode = ResponseCodes.NOT_FOUND,
                     description = ResponseCodes.NOT_FOUND_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    content = @Content(schema = @Schema(implementation = ErrorState.class))),
 
             @ApiResponse(responseCode = ResponseCodes.BAD_REQUEST,
                     description = ResponseCodes.BAD_REQUEST_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    content = @Content(schema = @Schema(implementation = ErrorState.class))),
 
             @ApiResponse(responseCode = ResponseCodes.NO_CONTENT,
                     description = ResponseCodes.NO_CONTENT_DESCRIPTION)

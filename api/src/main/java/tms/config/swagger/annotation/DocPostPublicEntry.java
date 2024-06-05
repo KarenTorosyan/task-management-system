@@ -27,11 +27,11 @@ public @interface DocPostPublicEntry {
     ApiResponse[] responses() default {
             @ApiResponse(responseCode = ResponseCodes.BAD_REQUEST,
                     description = ResponseCodes.BAD_REQUEST_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    content = @Content(schema = @Schema(implementation = ErrorState.class))),
 
             @ApiResponse(responseCode = ResponseCodes.CONFLICT,
                     description = ResponseCodes.CONFLICT_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorState.class)))
     };
 
     @AliasFor(annotation = Operation.class)

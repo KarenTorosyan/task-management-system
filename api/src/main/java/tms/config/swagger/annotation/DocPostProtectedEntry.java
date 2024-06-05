@@ -27,22 +27,22 @@ public @interface DocPostProtectedEntry {
     ApiResponse[] responses() default {
             @ApiResponse(responseCode = ResponseCodes.BAD_REQUEST,
                     description = ResponseCodes.BAD_REQUEST_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    content = @Content(schema = @Schema(implementation = ErrorState.class))),
 
             @ApiResponse(responseCode = ResponseCodes.CONFLICT,
                     description = ResponseCodes.CONFLICT_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    content = @Content(schema = @Schema(implementation = ErrorState.class))),
 
             @ApiResponse(responseCode = ResponseCodes.CREATED,
                     description = ResponseCodes.CREATED_DESCRIPTION),
 
             @ApiResponse(responseCode = ResponseCodes.UNAUTHORIZED,
                     description = ResponseCodes.UNAUTHORIZED_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    content = @Content(schema = @Schema(implementation = ErrorState.class))),
 
             @ApiResponse(responseCode = ResponseCodes.FORBIDDEN,
                     description = ResponseCodes.FORBIDDEN_DESCRIPTION,
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorState.class)))
     };
 
     @AliasFor(annotation = Operation.class)

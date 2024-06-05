@@ -11,7 +11,7 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
-import tms.errors.Errors;
+import tms.exception.RequiredParamException;
 
 import java.util.Set;
 
@@ -48,7 +48,8 @@ public class JwtConverter implements Converter<Jwt, AbstractAuthenticationToken>
         if (jwt.hasClaim(SUB)) {
             return SUB;
         }
-        throw Errors.jwtClaimRequired(SUB);
+        String message = "The claim: " + SUB + " required, but JWT not contains";
+        throw new RequiredParamException(message, "jwt_claim_required", SUB);
     }
 }
 

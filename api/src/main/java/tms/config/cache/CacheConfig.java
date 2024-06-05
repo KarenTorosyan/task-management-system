@@ -23,6 +23,7 @@ public class CacheConfig {
         objectMapper.setFilterProvider(new SimpleFilterProvider()
                 .addFilter("idOnly", SimpleBeanPropertyFilter.filterOutAllExcept("id")));
         objectMapper.activateDefaultTyping(BasicPolymorphicTypeValidator.builder()
+                        .allowIfBaseType("tms.model")
                 .build(), ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
         return objectMapper;
     }
