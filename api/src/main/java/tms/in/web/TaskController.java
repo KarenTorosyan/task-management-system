@@ -7,13 +7,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tms.config.swagger.annotation.*;
-import tms.model.Task;
-import tms.model.TaskComment;
-import tms.model.TaskEmployee;
-import tms.model.UserType;
+import tms.model.*;
 import tms.service.TaskCommentService;
 import tms.service.TaskEmployeeService;
 import tms.service.TaskService;
+import tms.service.UserService;
 import tms.transfer.*;
 import tms.util.PageOf;
 
@@ -26,10 +24,11 @@ public class TaskController {
 
     private final TaskService taskService;
     private final TaskEmployeeService taskEmployeeService;
+    private final UserService userService;
     private final TaskCommentService taskCommentService;
 
     @PostMapping("/tasks")
-    @DocPostProtectedEntry(summary = "Create task")
+    @DocPostProtectedEntry(summary = "Create a task")
     ResponseEntity<Void> createTask(@RequestBody TaskBody body) {
         Task ready = taskService.create(body.getTask());
         URI location = URI.create("/tasks/").resolve(String.valueOf(ready.getId()));
@@ -37,7 +36,7 @@ public class TaskController {
     }
 
     @PutMapping("/tasks/{taskId}")
-    @DocPutProtectedEntry(summary = "Edit task")
+    @DocPutProtectedEntry(summary = "Edit a task")
     ResponseEntity<Void> editTask(@PathVariable Long taskId,
                                   @RequestBody TaskBody body) {
         Task task = taskService.getById(taskId);
@@ -67,13 +66,13 @@ public class TaskController {
     }
 
     @GetMapping("/tasks/{taskId}")
-    @DocGetPublicEntry(summary = "Get task")
+    @DocGetPublicEntry(summary = "Get a task")
     ResponseEntity<TaskState> getTaskById(@PathVariable Long taskId) {
         return ResponseEntity.ok(TaskState.from(taskService.getById(taskId)));
     }
 
     @DeleteMapping("/tasks/{taskId}")
-    @DocDeleteProtectedEntry(summary = "Delete task")
+    @DocDeleteProtectedEntry(summary = "Delete a task")
     ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
         Task task = taskService.getById(taskId);
         taskService.delete(task);
@@ -81,11 +80,12 @@ public class TaskController {
     }
 
     @PostMapping("/tasks/{taskId}/employees")
-    @DocPostProtectedEntry(summary = "Add employee")
+    @DocPostProtectedEntry(summary = "Add an employee")
     ResponseEntity<Void> addEmployee(@PathVariable Long taskId,
                                      @RequestBody TaskEmployeeBody body) {
+        User user = userService.getUser(body.user());
         Task task = taskService.getById(taskId);
-        taskEmployeeService.add(body.getTaskEmployee().setTask(task));
+        taskEmployeeService.add(body.getTaskEmployee().setTask(task.setUser(user.getId())));
         return ResponseEntity.noContent().build();
     }
 
@@ -98,7 +98,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/tasks/employees/{employeeId}")
-    @DocDeleteProtectedEntry(summary = "Delete employee")
+    @DocDeleteProtectedEntry(summary = "Delete an employee")
     ResponseEntity<Void> deleteEmployee(@PathVariable Long employeeId) {
         TaskEmployee taskEmployee = taskEmployeeService.getById(employeeId);
         Task task = taskService.getById(taskEmployee.getTask().getId());
@@ -107,7 +107,7 @@ public class TaskController {
     }
 
     @PostMapping("/tasks/{taskId}/comments")
-    @DocPostProtectedEntry(summary = "Add comment")
+    @DocPostProtectedEntry(summary = "Add a comment")
     ResponseEntity<Void> addComment(@PathVariable Long taskId,
                                     @RequestBody TaskCommentBody body) {
         Task task = taskService.getById(taskId);
@@ -121,7 +121,7 @@ public class TaskController {
     }
 
     @PutMapping("/tasks/comments/{commentId}")
-    @DocPutProtectedEntry(summary = "Edit comment")
+    @DocPutProtectedEntry(summary = "Edit a comment")
     ResponseEntity<Void> editComment(@PathVariable Long commentId,
                                      @RequestBody TaskCommentEditBody body) {
         TaskComment taskComment = taskCommentService.getById(commentId);
@@ -153,7 +153,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/tasks/comments/{commentId}")
-    @DocDeleteProtectedEntry(summary = "Delete comment")
+    @DocDeleteProtectedEntry(summary = "Delete a comment")
     ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
         TaskComment taskComment = taskCommentService.getById(commentId);
         taskCommentService.delete(taskComment);

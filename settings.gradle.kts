@@ -14,5 +14,6 @@ dependencyResolutionManagement {
         plugin("spring-boot", "org.springframework.boot").version("3.2.0")
         plugin("spring-dependencyManagement", "io.spring.dependency-management").version("1.1.4")
         library("springdoc-swagger", "org.springdoc", "springdoc-openapi-starter-webmvc-ui").version("2.3.0")
+        library("fusionauthSdk", "io.fusionauth", "fusionauth-java-client").version("1.50.0")
     }
 }

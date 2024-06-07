@@ -40,6 +40,7 @@ public @interface DocGetProtectedEntries {
     @AliasFor(annotation = Operation.class)
     SecurityRequirement[] security() default {
             @SecurityRequirement(name = "bearer"),
+            @SecurityRequirement(name = "refreshToken"),
             @SecurityRequirement(name = "oAuth2Client")
     };
 }

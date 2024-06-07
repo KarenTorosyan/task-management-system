@@ -37,6 +37,7 @@ dependencies {
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:elasticsearch")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate6")
+    implementation(libs.fusionauthSdk)
 }
 
 tasks.test {

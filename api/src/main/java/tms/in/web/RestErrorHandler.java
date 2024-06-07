@@ -104,4 +104,24 @@ public class RestErrorHandler {
                 .setMessage(localize(e, request));
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(SsoProviderException.class)
+    ResponseEntity<ErrorState> handle(SsoProviderException e, HttpServletRequest request) {
+        ErrorState errorState = new ErrorState()
+                .setUri(request.getRequestURI())
+                .setStatus(HttpStatus.BAD_REQUEST.value())
+                .setDatetime(Instant.now())
+                .setMessage(e.getMessage());
+        return new ResponseEntity<>(errorState, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FileNotFoundException.class)
+    ResponseEntity<ErrorState> handle(FileNotFoundException e, HttpServletRequest request) {
+        ErrorState errorState = new ErrorState()
+                .setUri(request.getRequestURI())
+                .setStatus(HttpStatus.NOT_FOUND.value())
+                .setDatetime(Instant.now())
+                .setMessage(localize(e, request));
+        return new ResponseEntity<>(errorState, HttpStatus.NOT_FOUND);
+    }
 }

@@ -16,6 +16,8 @@ services:
     env_file:
       - docker/task-management-system/dev.env
     restart: unless-stopped
+    volumes:
+      - task-management-system-files:/opt/task-management-system/files
     depends_on:
       task-management-system-db:
         condition: service_healthy
@@ -159,6 +161,7 @@ networks:
   fusionauth-search-net:
 
 volumes:
+  task-management-system-files:
   task-management-system-db-data:
   task-management-system-search-data:
   task-management-system-cache-redis-data:

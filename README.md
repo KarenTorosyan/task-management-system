@@ -10,7 +10,6 @@
 #### Требования:
 
 1. ✅ Сервис должен поддерживать аутентификацию и автризацию пользователей по email и паролю.
-    - Использован сервер авторизации FusionAuth
 2. ✅ Доступ к API должен быть аутентифицироват с помощью JWT токена.
 3. ✅ Пользователи могут управлять своими задачами: создавать новые, редактировать существующие, просматривать и удалять,
    менять статус и назначать исполнителей задачи.
@@ -29,17 +28,13 @@
 
 ### Запуск
 
-Начальная конфигурация для сервера авторизации, можно применять после запуска
-`docker exec -i fusionauth-db psql -U postgres -d fusionauth < ./docker/fusionauth-db/postgres/dump.sql && docker compose restart fusionauth`
-администратор `pubappadm@outlook.com:password`
-
-- [API Документация](http://localhost:8080/swagger-ui.html) ℹ️ будет доступно после запуска
-
-#### Вариант с авторизацией на стороне клиента
+##### Аутентификация через FusionAuth
 
 1. Сборка и запуск `docker compose up task-management-system`
-2. Взаимодействие с сервером авторизации через [API](https://fusionauth.io/docs/apis) или [SDK](https://fusionauth.io/docs/sdks)
+2. Начальная конфигурация для [сервера авторизации](http://localhost:9011/admin)
+   `docker exec -i fusionauth-db psql -U postgres -d fusionauth < ./docker/fusionauth-db/postgres/dump.sql && docker compose restart fusionauth`
+   администратор `pubappadm@outlook.com:password`
+3. (Опционально) Взаимодействие с сервером авторизации через [API](https://fusionauth.io/docs/apis)
+   или [SDK](https://fusionauth.io/docs/sdks) на стороне клиента
 
-#### Вариант с авторизацией на стороне сервера
-
-Скоро...
+- [API Документация](http://localhost:8080/swagger-ui.html) будет доступно после запуска

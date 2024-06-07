@@ -4,11 +4,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
+import tms.config.sso.SsoProperties;
 
 import java.util.List;
 
@@ -17,8 +17,17 @@ import java.util.List;
 public class SecurityConfig {
 
     @Bean
-    public BearerTokenResolver bearerTokenResolver() {
-        return new BearerTokenExtractor();
+    BearerTokenExtractor bearerTokenExtractor(SsoProperties ssoProperties) {
+        BearerTokenExtractor bearerTokenExtractor = new BearerTokenExtractor();
+        bearerTokenExtractor.setTokenAge(ssoProperties.getAccessTokenAge());
+        return bearerTokenExtractor;
+    }
+
+    @Bean
+    RefreshTokenExtractor refreshTokenExtractor(SsoProperties ssoProperties) {
+        RefreshTokenExtractor refreshTokenExtractor = new RefreshTokenExtractor();
+        refreshTokenExtractor.setTokenAge(ssoProperties.getRefreshTokenAge());
+        return refreshTokenExtractor;
     }
 
     @Bean
