@@ -3,6 +3,8 @@ package tms.service;
 import jakarta.validation.Valid;
 import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
@@ -61,5 +63,10 @@ public class UserService {
     @PreAuthorize("isAuthenticated() and #user eq authentication.name")
     public void removeUser(String user) {
         userProvider.removeUser(user);
+    }
+
+    @PreAuthorize("isAuthenticated() && hasAnyAuthority('ROLE_ADMIN')")
+    public Page<User> searchUsers(String query, Pageable pageable) {
+        return userProvider.searchUsers(query, pageable);
     }
 }

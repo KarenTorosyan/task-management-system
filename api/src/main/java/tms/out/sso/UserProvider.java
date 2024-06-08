@@ -1,5 +1,7 @@
 package tms.out.sso;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import tms.model.AuthToken;
 import tms.model.User;
 
@@ -20,4 +22,6 @@ public interface UserProvider {
     User editUser(User user);
 
     void removeUser(String user);
+
+    Page<User> searchUsers(String query, Pageable pageable);
 }

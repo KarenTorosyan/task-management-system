@@ -24,4 +24,6 @@ public class SsoProperties {
     private int refreshTokenAge;
 
     private String filesAccess;
+
+    private String searchEngine;
 }

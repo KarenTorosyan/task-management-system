@@ -15,6 +15,8 @@ import io.fusionauth.domain.api.user.RegistrationRequest;
 import io.fusionauth.domain.api.user.RegistrationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import tms.config.sso.FusionAuthConfig;
 import tms.config.sso.SsoProperties;
@@ -36,6 +38,8 @@ public class FusionAuthUserProvider implements UserProvider {
     private final FusionAuthClient fusionAuthClient;
 
     private final SsoProperties ssoProperties;
+
+    private final FusionAuthSearchEngine fusionAuthSearchEngine;
 
     @Override
     public Optional<User> loadUser(String user) {
@@ -157,5 +161,10 @@ public class FusionAuthUserProvider implements UserProvider {
         }
         handleErrors(response.errorResponse, response.exception);
         throw new SsoProviderException("User removing failed");
+    }
+
+    @Override
+    public Page<User> searchUsers(String query, Pageable pageable) {
+        return fusionAuthSearchEngine.searchUsers(query, pageable, this::toLocalUser, this::handleErrors);
     }
 }

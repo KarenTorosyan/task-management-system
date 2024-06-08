@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import tms.transfer.SignInBody;
 import tms.transfer.SignUpBody;
 import tms.transfer.UserEditBody;
 import tms.transfer.UserState;
+import tms.util.PageOf;
 
 import java.net.URI;
 import java.nio.file.Path;
@@ -135,5 +137,14 @@ public class UserController {
         fileTransferService.read(Path.of(user.getImage()));
         userService.removeUser(user.getId());
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/users")
+    @DocGetProtectedEntriesPage(summary = "Search users",
+            description = "This request requires admin access")
+    ResponseEntity<PageOf<UserState>> searchUsers(@RequestParam String query,
+                                                  @DocInvisibleParam Pageable pageable) {
+        return ResponseEntity.ok(new PageOf<>(userService.searchUsers(query, pageable)
+                .map(UserState::from)));
     }
 }

@@ -7,6 +7,7 @@ sso:
   access-token-age: 3600
   refresh-token-age: 43200
   files-access: http://localhost:8080/download?location=
+  search-engine: elasticsearch
 
 fs:
   files-path: files
