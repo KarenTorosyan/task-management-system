@@ -1,13 +1,30 @@
 sso:
   provider: fusionauth
   server: http://localhost:9011
+  jwt-set-uri: ${sso.server}/.well-known/jwks.json
+  jws-algorithm: RS256
   api-key: Hjd_wU5w_Kh4CfzFoEWTNB-YJoMqGJoO_x0kbpKy8M2T4Y6UGEuRn0MW
   tenant-id: 66596267-5933-e0aa-b3bc-8ac0344bed03
   application-id: f3c84053-b5ff-423f-b2b5-af690b7199b0
+  files-access: http://localhost:8080/download?location=
+
+# common
   access-token-age: 3600
   refresh-token-age: 43200
-  files-access: http://localhost:8080/download?location=
   search-engine: elasticsearch
+  bearer-token-store-secret-hex: b08ebc4a4c5153a4fbe3574de17f1e02
+  audiences:
+
+# provider: local
+  refresh-token-secret: eadf53e3e3364bdc91216e4045e78f8f42f9101eab0633b443be7c5e13567d3a # local provider
+  refresh-token-algorithm: HmacSha512
+  refresh-token-rotation: true
+  bearer-token-type: jwt
+  keystore: classpath:openssl/localhost.p12
+  keystore-alias: localhost
+  keystore-password: password
+  keystore-key-password: password
+  keystore-key-algorithm: RS256
 
 fs:
   files-path: files
@@ -33,13 +50,6 @@ spring:
     uris: localhost:9200
     username: elastic
     password: elastic
-
-  security:
-    oauth2:
-      resource-server:
-        jwt:
-          jwk-set-uri: ${sso.server}/.well-known/jwks.json
-          jws-algorithms: RS256
 
   messages:
     basename: locale/messages

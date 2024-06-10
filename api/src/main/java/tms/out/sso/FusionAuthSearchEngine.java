@@ -11,4 +11,6 @@ import java.util.function.Function;
 public interface FusionAuthSearchEngine {
 
     Page<User> searchUsers(String query, Pageable pageable, Function<io.fusionauth.domain.User, User> converter, BiConsumer<Errors, Exception> errorHandler);
+
+    Page<User> matchAll(Pageable pageable, Function<io.fusionauth.domain.User, User> converter, BiConsumer<Errors, Exception> errorHandler);
 }

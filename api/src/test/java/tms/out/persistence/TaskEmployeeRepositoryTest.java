@@ -9,8 +9,6 @@ import tms.model.Task;
 import tms.model.TaskEmployee;
 import tms.model.TaskPriority;
 import tms.model.TaskStatus;
-import tms.out.persistence.TaskEmployeeRepository;
-import tms.out.persistence.TaskRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

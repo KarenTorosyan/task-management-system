@@ -19,7 +19,7 @@ public class RefreshTokenExtractor {
     public String extract(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(cookieName)) {
+            if (cookie.getName().equals(cookieName) && !cookie.getValue().isBlank()) {
                 return cookie.getValue();
             }
         }

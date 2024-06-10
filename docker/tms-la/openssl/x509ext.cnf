@@ -1,0 +1,5 @@
+[ ext_v3 ]
+basicConstraints               = critical, CA:FALSE
+keyUsage                       = critical, digitalSignature
+extendedKeyUsage               = serverAuth, clientAuth
+subjectKeyIdentifier           = hash

@@ -16,10 +16,7 @@ import tms.model.AuthToken;
 import tms.model.User;
 import tms.service.FileTransferService;
 import tms.service.UserService;
-import tms.transfer.SignInBody;
-import tms.transfer.SignUpBody;
-import tms.transfer.UserEditBody;
-import tms.transfer.UserState;
+import tms.transfer.*;
 import tms.util.PageOf;
 
 import java.net.URI;
@@ -45,6 +42,15 @@ public class UserController {
     @DocGetPublicEntry(summary = "Get a user")
     ResponseEntity<UserState> getUser(@PathVariable("user") String user) {
         return ResponseEntity.ok(UserState.from(userService.getUser(user)));
+    }
+
+    @GetMapping("/users/email")
+    @DocGetPublicEntry(summary = "Get user by attribute")
+    ResponseEntity<UserState> getUserByEmail(@RequestParam(required = false) String email) {
+        if (email != null) {
+            return ResponseEntity.ok(UserState.from(userService.getUserByEmail(email)));
+        }
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/users/signUp")
@@ -131,20 +137,48 @@ public class UserController {
     }
 
     @DeleteMapping("/users")
-    @DocDeleteProtectedEntry(summary = "Remove a user")
+    @DocDeleteProtectedEntry(summary = "Remove account")
     ResponseEntity<Void> deleteUser() {
         User user = userService.getUser();
-        fileTransferService.read(Path.of(user.getImage()));
-        userService.removeUser(user.getId());
+        String image = user.getImage();
+        if (image != null) {
+            fileTransferService.remove(Path.of(user.getImage()));
+        }
+        userService.removeUser(user);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/users")
+    @DocGetProtectedEntriesPage(summary = "Get users",
+            description = "This request requires admin access")
+    ResponseEntity<PageOf<UserState>> getUsers(@DocInvisibleParam Pageable pageable) {
+        return ResponseEntity.ok(new PageOf<>(userService.getUsers(pageable)
+                .map(UserState::from)));
+    }
+
+    @GetMapping("/users/search")
     @DocGetProtectedEntriesPage(summary = "Search users",
             description = "This request requires admin access")
     ResponseEntity<PageOf<UserState>> searchUsers(@RequestParam String query,
                                                   @DocInvisibleParam Pageable pageable) {
         return ResponseEntity.ok(new PageOf<>(userService.searchUsers(query, pageable)
                 .map(UserState::from)));
+    }
+
+    @GetMapping("/users/sessions")
+    @DocGetProtectedEntry(summary = "Get user sessions")
+    ResponseEntity<PageOf<SessionState>> sessions(@DocInvisibleParam Pageable pageable,
+                                                  HttpServletRequest request) {
+        User user = userService.getUser();
+        String refreshToken = refreshTokenExtractor.extract(request);
+        return ResponseEntity.ok(new PageOf<>(userService.getSessions(user.getId(), pageable)
+                .map(session -> SessionState.from(session, refreshToken))));
+    }
+
+    @DeleteMapping("/users/sessions{sessId}")
+    @DocDeleteProtectedEntry(summary = "Delete a user session")
+    ResponseEntity<Void> deleteSession(@PathVariable String sessId) {
+        userService.removeSession(userService.getSession(sessId));
+        return ResponseEntity.noContent().build();
     }
 }

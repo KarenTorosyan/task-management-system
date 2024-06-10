@@ -85,7 +85,7 @@ public class TaskController {
                                      @RequestBody TaskEmployeeBody body) {
         User user = userService.getUser(body.user());
         Task task = taskService.getById(taskId);
-        taskEmployeeService.add(body.getTaskEmployee().setTask(task.setUser(user.getId())));
+        taskEmployeeService.add(body.getTaskEmployee().setTask(task).setEmployee(user.getId()));
         return ResponseEntity.noContent().build();
     }
 
@@ -97,10 +97,10 @@ public class TaskController {
                 .map(TaskEmployeeState::from)));
     }
 
-    @DeleteMapping("/tasks/employees/{employeeId}")
+    @DeleteMapping("/tasks/employees/{id}")
     @DocDeleteProtectedEntry(summary = "Delete an employee")
-    ResponseEntity<Void> deleteEmployee(@PathVariable Long employeeId) {
-        TaskEmployee taskEmployee = taskEmployeeService.getById(employeeId);
+    ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
+        TaskEmployee taskEmployee = taskEmployeeService.getById(id);
         Task task = taskService.getById(taskEmployee.getTask().getId());
         taskEmployeeService.delete(taskEmployee.setTask(task));
         return ResponseEntity.noContent().build();
@@ -152,10 +152,10 @@ public class TaskController {
                 .map(TaskCommentState::from)));
     }
 
-    @DeleteMapping("/tasks/comments/{commentId}")
+    @DeleteMapping("/tasks/comments/{id}")
     @DocDeleteProtectedEntry(summary = "Delete a comment")
-    ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
-        TaskComment taskComment = taskCommentService.getById(commentId);
+    ResponseEntity<Void> deleteComment(@PathVariable Long id) {
+        TaskComment taskComment = taskCommentService.getById(id);
         taskCommentService.delete(taskComment);
         return ResponseEntity.noContent().build();
     }

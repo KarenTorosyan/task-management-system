@@ -10,4 +10,6 @@ public interface TaskEmployeeRepository extends JpaRepository<TaskEmployee, Long
     Page<TaskEmployee> findAllByTaskId(Long taskId, Pageable pageable);
 
     boolean existsByTaskIdAndEmployee(Long taskId, String employee);
+
+    Page<TaskEmployee> findAllByEmployee(String employee, Pageable pageable);
 }

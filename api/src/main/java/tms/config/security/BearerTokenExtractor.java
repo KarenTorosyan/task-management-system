@@ -21,7 +21,7 @@ public class BearerTokenExtractor implements BearerTokenResolver {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(cookieName)) {
+                if (cookie.getName().equals(cookieName) && !cookie.getValue().isBlank()) {
                     return cookie.getValue();
                 }
             }

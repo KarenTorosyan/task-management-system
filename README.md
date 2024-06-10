@@ -28,13 +28,17 @@
 
 ### Запуск
 
+- Сборка `docker build -t tms ./`
+
+##### Локалаьная аутентификация
+
+1. Запуск `docker compose up tms-la` администратор `pubappadm@outlook.com:password`
+
 ##### Аутентификация через FusionAuth
 
-1. Сборка и запуск `docker compose up task-management-system`
+1. Запуск `docker compose up tms-fusionauth`
 2. Начальная конфигурация для [сервера авторизации](http://localhost:9011/admin)
    `docker exec -i fusionauth-db psql -U postgres -d fusionauth < ./docker/fusionauth-db/postgres/dump.sql && docker compose restart fusionauth`
    администратор `pubappadm@outlook.com:password`
-3. (Опционально) Взаимодействие с сервером авторизации через [API](https://fusionauth.io/docs/apis)
-   или [SDK](https://fusionauth.io/docs/sdks) на стороне клиента
 
 - [API Документация](http://localhost:8080/swagger-ui.html) будет доступно после запуска

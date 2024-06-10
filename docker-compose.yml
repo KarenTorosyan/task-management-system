@@ -1,11 +1,33 @@
 version: '3.9'
 
 services:
-  task-management-system:
-    container_name: task-management-system
-    build:
-      context: ./
-      dockerfile: Dockerfile
+
+  tms-la:
+    container_name: tms-la
+    image: tms
+    networks:
+      - task-management-system-db-net
+      - task-management-system-search-net
+      - task-management-system-cache-redis-net
+    ports:
+      - "8080:8080"
+    env_file:
+      - docker/tms-la/tms.env
+    restart: unless-stopped
+    volumes:
+      - task-management-system-files:/opt/task-management-system/files
+      - ./docker/tms-la/openssl:/opt/task-management-system/openssl
+    depends_on:
+      task-management-system-db:
+        condition: service_healthy
+      task-management-system-elasticsearch:
+        condition: service_healthy
+      task-management-system-cache-redis:
+        condition: service_healthy
+  
+  tms-fusionauth:
+    container_name: tms-fusionauth
+    image: tms
     networks:
       - task-management-system-db-net
       - task-management-system-search-net

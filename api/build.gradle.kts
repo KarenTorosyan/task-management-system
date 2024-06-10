@@ -38,6 +38,8 @@ dependencies {
     testImplementation("org.testcontainers:elasticsearch")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate6")
     implementation(libs.fusionauthSdk)
+    implementation(libs.bouncycastle.cryptoProvider)
+    implementation(libs.userAgentParser)
 }
 
 tasks.test {

@@ -9,6 +9,7 @@ import io.fusionauth.domain.search.Sort;
 import io.fusionauth.domain.search.SortField;
 import io.fusionauth.domain.search.UserSearchCriteria;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+@ConditionalOnBean(FusionAuthClient.class)
 @ConditionalOnProperty(name = "sso.search-engine", havingValue = "elasticsearch", matchIfMissing = true)
 @Component
 @RequiredArgsConstructor
@@ -60,14 +62,22 @@ public class ElasticsearchFusionAuthSearchEngine implements FusionAuthSearchEngi
                     }
                 }
                 """.replaceAll("%query%", query);
+        init(userSearchCriteria, pageable);
+
+        ClientResponse<SearchResponse, Errors> response = fusionAuthClient.searchUsersByQuery(new SearchRequest(userSearchCriteria));
+
+        return response(response, converter, errorHandler, pageable);
+    }
+
+    private void init(UserSearchCriteria userSearchCriteria, Pageable pageable) {
         userSearchCriteria.startRow = Math.toIntExact(pageable.getOffset());
         userSearchCriteria.numberOfResults = pageable.getPageSize();
         userSearchCriteria.sortFields = pageable.getSort().stream()
                 .map(sort -> new SortField(sort.getProperty(), Sort.valueOf(sort.getDirection().name().toLowerCase())))
                 .toList();
+    }
 
-        ClientResponse<SearchResponse, Errors> response = fusionAuthClient.searchUsersByQuery(new SearchRequest(userSearchCriteria));
-
+    private Page<User> response(ClientResponse<SearchResponse, Errors> response, Function<io.fusionauth.domain.User, User> converter, BiConsumer<Errors, Exception> errorHandler, Pageable pageable) {
         List<User> users = new ArrayList<>(0);
 
         if (response.wasSuccessful()) {
@@ -79,5 +89,19 @@ public class ElasticsearchFusionAuthSearchEngine implements FusionAuthSearchEngi
         errorHandler.accept(response.errorResponse, response.exception);
 
         return new PageImpl<>(users, pageable, response.successResponse.total);
+    }
+
+    @Override
+    public Page<User> matchAll(Pageable pageable, Function<io.fusionauth.domain.User, User> converter, BiConsumer<Errors, Exception> errorHandler) {
+        UserSearchCriteria userSearchCriteria = new UserSearchCriteria();
+        userSearchCriteria.query = """
+                {
+                    "match_all": {}
+                }
+                """;
+        init(userSearchCriteria, pageable);
+        ClientResponse<SearchResponse, Errors> response = fusionAuthClient.searchUsersByQuery(new SearchRequest(userSearchCriteria));
+
+        return response(response, converter, errorHandler, pageable);
     }
 }
