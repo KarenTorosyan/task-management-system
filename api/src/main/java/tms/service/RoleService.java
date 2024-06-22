@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -40,7 +41,6 @@ public class RoleService {
         return strategy.getContext().getAuthentication().getName();
     }
 
-    @CachePut(key = "#role.id")
     @Transactional
     public Role createRole(@Valid Role role) {
         Optional<Role> ready = roleRepository.findByName(role.getName());
@@ -93,6 +93,7 @@ public class RoleService {
         return roleRepository.findAllByUsersId(userId, pageable);
     }
 
+    @CacheEvict(key = "#role.id")
     @Transactional
     public void revokeRole(Role role) {
         roleRepository.delete(role);

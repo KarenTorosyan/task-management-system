@@ -5,6 +5,7 @@ import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -61,7 +62,6 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found", "user_not_found"));
     }
 
-    @CachePut(key = "#user.id")
     @Validated({OnCreate.class, Default.class})
     @Transactional
     public User signUp(@Valid User user) {
@@ -86,8 +86,8 @@ public class UserService {
     @Transactional
     public void signOut(String refreshToken) {
         userProvider.signOut(refreshToken);
-        strategy.clearContext();
         log.debug("User signed out (id={})", currentUser());
+        strategy.clearContext();
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -98,6 +98,7 @@ public class UserService {
         return authToken;
     }
 
+    @CachePut(key = "#user.id")
     @PreAuthorize("isAuthenticated() and #user.id eq authentication.name")
     @Transactional
     public User editUser(@Valid User user) {
@@ -106,6 +107,7 @@ public class UserService {
         return ready;
     }
 
+    @CacheEvict(key = "#user.id")
     @PreAuthorize("isAuthenticated() and #user.id eq authentication.name")
     @Transactional
     public void removeUser(User user) {

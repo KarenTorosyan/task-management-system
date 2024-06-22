@@ -32,7 +32,6 @@ public class TaskService {
     private final SecurityContextHolderStrategy strategy = SecurityContextHolder.getContextHolderStrategy();
 
     @PreAuthorize("isAuthenticated()")
-    @CachePut(key = "#task.id")
     @Transactional
     public Task create(@Valid Task task) {
         Task ready = taskRepository.save(task.setUser(strategy.getContext().getAuthentication().getName()));
