@@ -16,7 +16,11 @@ public class SsoProperties {
 
     private String provider;
 
-    private String server;
+    private String issuer;
+
+    private String authorizationUri = "/oauth2/authorize";
+
+    private String tokenUri = "/oauth2/token";
 
     private String jwtSetUri;
 

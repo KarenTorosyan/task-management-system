@@ -11,6 +11,6 @@ public class FusionAuthConfig {
 
     @Bean
     FusionAuthClient fusionAuthClient(SsoProperties ssoProperties) {
-        return new FusionAuthClient(ssoProperties.getApiKey(), ssoProperties.getServer(), ssoProperties.getTenantId());
+        return new FusionAuthClient(ssoProperties.getApiKey(), ssoProperties.getIssuer(), ssoProperties.getTenantId());
     }
 }

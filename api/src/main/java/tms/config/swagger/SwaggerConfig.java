@@ -6,7 +6,6 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.OAuthFlow;
 import io.swagger.v3.oas.models.security.OAuthFlows;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import org.springdoc.core.properties.SwaggerUiOAuthProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import tms.config.security.RefreshTokenExtractor;
@@ -19,14 +18,14 @@ import java.util.Map;
 public class SwaggerConfig {
 
     @Bean
-    OpenAPI openAPI(SwaggerUiOAuthProperties swaggerUiOAuthProperties,
+    OpenAPI openAPI(SwaggerProperties swaggerProperties,
                     SsoProperties ssoProperties,
                     RefreshTokenExtractor refreshTokenExtractor) {
         Map<String, SecurityScheme> securitySchemes = new HashMap<>();
         securitySchemes.put("bearer", bearerTokenSecurityScheme());
         securitySchemes.put("refreshToken", refreshTokenSecurityScheme(refreshTokenExtractor));
         if (!ssoProperties.getProvider().equalsIgnoreCase("local")) {
-            securitySchemes.put("oAuth2Client", oauth2SecurityScheme(swaggerUiOAuthProperties));
+            securitySchemes.put("oAuth2Client", oauth2SecurityScheme(swaggerProperties, ssoProperties));
         }
         return new OpenAPI()
                 .info(new Info().title("Task Management System").version("1.0"))
@@ -47,13 +46,13 @@ public class SwaggerConfig {
                 .name(refreshTokenExtractor.getHeaderName());
     }
 
-    private SecurityScheme oauth2SecurityScheme(SwaggerUiOAuthProperties swaggerUiOAuthProperties) {
-        Map<String, String> params = swaggerUiOAuthProperties.getAdditionalQueryStringParams();
+    private SecurityScheme oauth2SecurityScheme(SwaggerProperties swaggerProperties, SsoProperties ssoProperties) {
+        String issuer = swaggerProperties.getOAuth2().getIssuer();
         return new SecurityScheme()
                 .type(SecurityScheme.Type.OAUTH2)
                 .flows(new OAuthFlows().authorizationCode(new OAuthFlow()
-                        .authorizationUrl(params.get("authorization-uri"))
-                        .tokenUrl(params.get("token-uri"))
+                        .authorizationUrl(issuer.concat(ssoProperties.getAuthorizationUri()))
+                        .tokenUrl(issuer.concat(ssoProperties.getTokenUri()))
                 ));
     }
 }

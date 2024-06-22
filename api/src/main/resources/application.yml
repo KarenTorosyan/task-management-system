@@ -1,7 +1,7 @@
 sso:
   provider: fusionauth
-  server: http://localhost:9011
-  jwt-set-uri: ${sso.server}/.well-known/jwks.json
+  issuer: http://localhost:9011
+  jwt-set-uri: ${sso.issuer}/.well-known/jwks.json
   jws-algorithm: RS256
   api-key: Hjd_wU5w_Kh4CfzFoEWTNB-YJoMqGJoO_x0kbpKy8M2T4Y6UGEuRn0MW
   tenant-id: 66596267-5933-e0aa-b3bc-8ac0344bed03
@@ -83,6 +83,7 @@ springdoc:
       client-id: f3c84053-b5ff-423f-b2b5-af690b7199b0
       use-pkce-with-authorization-code-grant: true
       scopes: openid, email
-      additional-query-string-params:
-        authorization-uri: ${sso.server}/oauth2/authorize
-        token-uri: ${sso.server}/oauth2/token
+
+swagger:
+  oAuth2:
+    issuer: ${sso.issuer}
