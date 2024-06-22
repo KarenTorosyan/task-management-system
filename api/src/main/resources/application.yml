@@ -26,6 +26,11 @@ sso:
   keystore-key-password: password
   keystore-key-algorithm: RS256
 
+cors:
+  allowed-origins:
+    - "http://localhost:4200"
+    - "http://localhost:3000"
+
 fs:
   files-path: files
 

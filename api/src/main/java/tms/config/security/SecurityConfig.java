@@ -13,6 +13,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import tms.config.sso.SsoProperties;
+import tms.config.web.CorsProperties;
 
 import java.util.List;
 
@@ -40,11 +41,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity security,
+                                            CorsProperties corsProperties) throws Exception {
         return security
                 .cors(c -> c.configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(List.of("*"));
+                    corsConfiguration.setAllowedOrigins(corsProperties.getAllowedOrigins());
                     corsConfiguration.setAllowedMethods(List.of("GET", "OPTIONS", "POST", "PUT", "DELETE"));
                     corsConfiguration.setAllowedHeaders(List.of("Content-Type", "Authorization", "X-Xsrf-Token"));
                     corsConfiguration.setAllowCredentials(true);
