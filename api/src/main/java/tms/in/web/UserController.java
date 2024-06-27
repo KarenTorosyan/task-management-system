@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tms.config.security.BearerTokenExtractor;
@@ -21,6 +23,7 @@ import tms.util.PageOf;
 
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequiredArgsConstructor
@@ -104,28 +107,34 @@ public class UserController {
 
     @PostMapping(value = "/users/image", consumes = "multipart/form-data")
     @DocPostProtectedEntry(summary = "Set a user image")
-    ResponseEntity<Void> setImage(@RequestPart MultipartFile image) {
+    CompletableFuture<ResponseEntity<Object>> setImage(@RequestPart MultipartFile image) {
         User user = userService.getUser();
-        Path location = fileTransferService.transfer(image, path -> path);
-        user.setImage(location.toString());
-        userService.editUser(user);
-        return ResponseEntity.noContent().build();
+        String currentImage = user.getImage();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return fileTransferService.transfer(image).thenApply(location -> {
+            user.setImage(location.toString());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            userService.editUser(user);
+            if (currentImage != null) {
+                fileTransferService.remove(Path.of(currentImage));
+            }
+            return ResponseEntity.noContent().build();
+        });
     }
 
     @GetMapping("/users/image")
     @DocGetProtectedEntry(summary = "Get a user image")
-    ResponseEntity<byte[]> getImage() {
+    CompletableFuture<ResponseEntity<byte[]>> getImage() {
         User user = userService.getUser();
         if (user.getImage() == null) {
-            return ResponseEntity.notFound().build();
+            return CompletableFuture.completedFuture(ResponseEntity.notFound().build());
         }
         String image = user.getImage();
         String ext = image.substring(image.lastIndexOf(".") + 1);
-        byte[] content = fileTransferService.read(Path.of(image));
-        return ResponseEntity.ok()
+        return fileTransferService.read(Path.of(image)).thenApply(content -> ResponseEntity.ok()
                 .contentType(new MediaType("image", ext))
                 .contentLength(content.length)
-                .body(content);
+                .body(content));
     }
 
     @PutMapping("/users")

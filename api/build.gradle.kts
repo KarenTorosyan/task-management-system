@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.fusionauthSdk)
     implementation(libs.bouncycastle.cryptoProvider)
     implementation(libs.userAgentParser)
+    implementation(libs.awsSdk.s3)
 }
 
 tasks.test {

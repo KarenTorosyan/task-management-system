@@ -17,5 +17,6 @@ dependencyResolutionManagement {
         library("fusionauthSdk", "io.fusionauth", "fusionauth-java-client").version("1.50.0")
         library("bouncycastle.cryptoProvider", "org.bouncycastle:bcprov-jdk18on:1.78.1")
         library("userAgentParser", "com.github.ua-parser:uap-java:1.6.1")
+        library("awsSdk.s3", "software.amazon.awssdk:s3:2.26.9")
     }
 }

@@ -31,8 +31,15 @@ cors:
     - "http://localhost:4200"
     - "http://localhost:3000"
 
-fs:
-  files-path: files
+file:
+  store: s3
+
+aws:
+  s3:
+    region: eu-central-1
+    bucket: bmain
+    access-key: AKIAU4N7I72EZUR6C7PE
+    secret-key: 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
 
 spring:
   main:

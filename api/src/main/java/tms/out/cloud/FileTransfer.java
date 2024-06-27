@@ -1,14 +1,16 @@
 package tms.out.cloud;
 
-import org.springframework.web.multipart.MultipartFile;
-
+import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 
 public interface FileTransfer {
 
-    Path transfer(MultipartFile file, Path path);
+    CompletableFuture<Path> transfer(Path path);
 
-    byte[] read(Path path);
+    CompletableFuture<Path> transfer(InputStream stream, String name);
 
-    void remove(Path path);
+    CompletableFuture<byte[]> read(Path path);
+
+    CompletableFuture<Void> remove(Path path);
 }

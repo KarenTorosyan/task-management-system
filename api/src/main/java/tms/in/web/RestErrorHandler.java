@@ -124,4 +124,14 @@ public class RestErrorHandler {
                 .setMessage(localize(e, request));
         return new ResponseEntity<>(errorState, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(FileTransferException.class)
+    ResponseEntity<ErrorState> handle(FileTransferException e, HttpServletRequest request) {
+        ErrorState errorState = new ErrorState()
+                .setUri(request.getRequestURI())
+                .setStatus(HttpStatus.CONFLICT.value())
+                .setDatetime(Instant.now())
+                .setMessage(localize(e, request));
+        return new ResponseEntity<>(errorState, HttpStatus.CONFLICT);
+    }
 }

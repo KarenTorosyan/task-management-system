@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tms.service.FileTransferService;
 
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,12 +20,13 @@ public class FileController {
     private final FileTransferService fileTransferService;
 
     @GetMapping("/download")
-    public ResponseEntity<byte[]> load(@RequestParam String location) {
-        byte[] content = fileTransferService.read(Path.of(location));
-        String ext = location.substring(location.lastIndexOf(".") + 1);
-        return ResponseEntity.ok()
-                .contentType(new MediaType("image", ext))
-                .contentLength(content.length)
-                .body(content);
+    public CompletableFuture<ResponseEntity<byte[]>> load(@RequestParam String location) {
+        return fileTransferService.read(Path.of(location)).thenApply(content -> {
+            String ext = location.substring(location.lastIndexOf(".") + 1);
+            return ResponseEntity.ok()
+                    .contentType(new MediaType("image", ext))
+                    .contentLength(content.length)
+                    .body(content);
+        });
     }
 }
